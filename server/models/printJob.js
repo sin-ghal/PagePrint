@@ -28,7 +28,6 @@ const printJobSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    
     price: {
       type: Number,
       default: 0,
