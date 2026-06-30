@@ -103,7 +103,7 @@ const MyQR = () => {
       <nav className="flex items-center justify-between px-6 py-4 shadow-sm" style={{ backgroundColor: "#fff", borderBottom: "1px solid #e5e7eb" }}>
         <div className="flex items-center gap-2">
           <span className="text-2xl">🖨️</span>
-          <h1 className="text-xl font-bold" style={{ color: "#1a1a2e" }}>Print<span style={{ color: #c0392b }}>Drop</span></h1>
+          <h1 className="text-xl font-bold" style={{ color: "#1a1a2e" }}>Print<span style={{ color: "#c0392b" }}>Drop</span></h1>
         </div>
         <button
           onClick={() => navigate("/dashboard")}
