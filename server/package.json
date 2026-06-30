@@ -1,13 +1,14 @@
 {
-  "name": "server",
+  "name": "printdrop-server",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "QR-based print job management system - Backend",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "start": "node server.js",
+  "dev": "nodemon server.js"
+},
   "keywords": [],
-  "author": "",
+  "author": "Anuj Singhal",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {

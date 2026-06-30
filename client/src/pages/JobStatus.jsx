@@ -13,7 +13,7 @@ const JobStatus = () => {
     fetchStatus()
 
     //socket - listen for real-time status updates
-    const socket = io("http://localhost:4000") //socket
+    const socket = io(import.meta.env.VITE_BACKEND_URL || "http://localhost:4000") //socket
     socket.emit("join-job", jobId) //socket - join job room
 
     socket.on("job-status-update", (data) => { //socket - listen

@@ -9,7 +9,7 @@ exports.dbconnect = async ()=>{
         console.log("database connected successfully");
 
     }catch(e){
-        console.error("error in connecting database")
+        console.error("error in connecting database:", e.message)
         process.exit(1);
     }
 }   

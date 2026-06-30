@@ -25,7 +25,7 @@ const Dashboard = () => {
     fetchQR()
 
     // Socket connection
-    const socket = io("http://localhost:4000") //socket
+    const socket = io(import.meta.env.VITE_BACKEND_URL || "http://localhost:4000") //socket
     socket.emit("join-shop", user._id) //socket - join room
 
     socket.on("new-job", (data) => { //socket - listen new job
