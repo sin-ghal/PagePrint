@@ -1,0 +1,38 @@
+const { Server } = require("socket.io")
+
+let io
+
+exports.initSocket = (server) => {
+  io = new Server(server, {
+    cors: {
+      origin: "http://localhost:5173",
+      credentials: true,
+    },
+  })
+
+  io.on("connection", (socket) => {
+    console.log("Socket connected:", socket.id)
+
+    socket.on("join-shop", (shopkeeperId) => {
+      socket.join(shopkeeperId)
+      console.log(`Shopkeeper ${shopkeeperId} joined room`)
+    })
+
+    //socket - customer joins job room to get status updates
+    socket.on("join-job", (jobId) => {
+      socket.join(jobId)
+      console.log(`Customer joined job room: ${jobId}`)
+    })
+
+    socket.on("disconnect", () => {
+      console.log("Socket disconnected:", socket.id)
+    })
+  })
+
+  return io
+}
+
+exports.getIO = () => {
+  if (!io) throw new Error("Socket.io not initialized")
+  return io
+}
