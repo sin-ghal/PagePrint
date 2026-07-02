@@ -72,7 +72,7 @@ const JobStatus = () => {
       {/* Header */}
       <div className="text-center py-6 px-6" style={{ backgroundColor: "#fff", borderBottom: "1px solid #e5e7eb" }}>
         <span className="text-2xl">🖨️</span>
-        <h1 className="text-xl font-bold mt-1" style={{ color: "#1a1a2e" }}>Print<span style={{ color: "#c0392b" }}>Drop</span></h1>
+        <h1 className="text-xl font-bold mt-1" style={{ color: "#1a1a2e" }}>Page<span style={{ color: "#c0392b" }}>Print</span></h1>
       </div>
 
       <div className="max-w-md mx-auto px-6 py-10">

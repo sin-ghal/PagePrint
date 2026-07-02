@@ -1,5 +1,5 @@
 {
-  "name": "printdrop-server",
+  "name": "pageprint-server",
   "version": "1.0.0",
   "description": "QR-based print job management system - Backend",
   "main": "server.js",

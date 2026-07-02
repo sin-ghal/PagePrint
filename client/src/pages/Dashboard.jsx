@@ -141,7 +141,7 @@ const Dashboard = () => {
       <nav className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4 shadow-sm" style={{ backgroundColor: "#fff", borderBottom: "1px solid #e5e7eb" }}>
         <div className="flex items-center gap-2">
           <span className="text-2xl">🖨️</span>
-          <h1 className="text-xl font-bold" style={{ color: "#1a1a2e" }}>Print<span style={{ color: "#c0392b" }}>Drop</span></h1>
+          <h1 className="text-xl font-bold" style={{ color: "#1a1a2e" }}>Page<span style={{ color: "#c0392b" }}>Print</span></h1>
         </div>
         <div className="flex items-center gap-4">
           <Link to="/my-qr" className="px-4 py-2 rounded-lg text-sm font-medium transition hover:shadow-lg hover:scale-105 active:scale-95" style={{ backgroundColor: "#fdecea", color: "#c0392b" }}>

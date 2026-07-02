@@ -86,7 +86,7 @@ const Register = () => {
           >
             <span className="text-4xl">🖨️</span>
           </div>
-          <h1 className="text-3xl font-bold" style={{ color: "#1a1a2e" }}>Print<span style={{ color: "#c0392b" }}>Drop</span></h1>
+          <h1 className="text-3xl font-bold" style={{ color: "#1a1a2e" }}>Page<span style={{ color: "#c0392b" }}>Print</span></h1>
           <p style={{ color: "#c0392b" }} className="text-sm font-medium mt-1">Simple. Fast. Paper.</p>
         </div>
 
@@ -149,7 +149,7 @@ const Register = () => {
           {/* Mobile logo */}
           <div className="lg:hidden text-center mb-8">
             <span className="text-4xl">🖨️</span>
-            <h1 className="text-2xl font-bold mt-2" style={{ color: "#1a1a2e" }}>Print<span style={{ color: "#c0392b" }}>Drop</span></h1>
+            <h1 className="text-2xl font-bold mt-2" style={{ color: "#1a1a2e" }}>Page<span style={{ color: "#c0392b" }}>Print</span></h1>
           </div>
 
           <div>

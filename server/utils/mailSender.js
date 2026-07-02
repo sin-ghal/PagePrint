@@ -3,7 +3,7 @@ const https = require("https")
 exports.mailSender = async (email, title, body) => {
   try {
     const data = JSON.stringify({
-      sender: { name: "PrintDrop", email: "saswm1427@gmail.com" },
+      sender: { name: "PagePrint", email: "saswm1427@gmail.com" },
       to: [{ email: email }],
       subject: title,
       htmlContent: body,

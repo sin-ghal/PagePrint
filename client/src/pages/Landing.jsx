@@ -9,7 +9,7 @@ const Landing = () => {
       <nav className="flex items-center justify-between px-8 py-5 max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
           <span className="text-3xl">🖨️</span>
-          <h1 className="text-2xl font-bold" style={{ color: "#fff" }}>PrintDrop</h1>
+          <h1 className="text-2xl font-bold" style={{ color: "#fff" }}>PagePrint</h1>
         </div>
         <div className="flex gap-3">
           <Link
@@ -252,7 +252,7 @@ const Landing = () => {
           Ready to modernize your shop?
         </h3>
         <p className="mb-10 text-lg z-10 relative" style={{ color: "rgba(255,255,255,0.6)" }}>
-          Join hundreds of print shops already using PrintDrop
+          Join hundreds of print shops already using PagePrint
         </p>
         <Link
           to="/register"
@@ -265,9 +265,9 @@ const Landing = () => {
 
       {/* Footer */}
       <footer className="py-10 px-6 text-center" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-        <p className="text-lg font-semibold mb-2" style={{ color: "#fff" }}>🖨️ PrintDrop</p>
+        <p className="text-lg font-semibold mb-2" style={{ color: "#fff" }}>🖨️ PagePrint</p>
         <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>QR-based print management for modern shops</p>
-        <p className="text-xs mt-4" style={{ color: "rgba(255,255,255,0.2)" }}>© 2025 PrintDrop. All rights reserved.</p>
+        <p className="text-xs mt-4" style={{ color: "rgba(255,255,255,0.2)" }}>© 2025 PagePrint. All rights reserved.</p>
       </footer>
     </div>
   )
