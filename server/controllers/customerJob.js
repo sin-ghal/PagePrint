@@ -1,5 +1,6 @@
 const PrintJob = require("../models/printJob")
 const Shopkeeper = require("../models/Shopkeeper")
+const cloudinary = require("cloudinary").v2
 const { v4: uuidv4 } = require("uuid")
 const { getIO } = require("../config/socket") //socket
 
@@ -47,6 +48,26 @@ const files = req.files.map((file, index) => ({
 //socket - emit new job to shopkeeper's room
 const io = getIO() //socket
 io.to(shopkeeper._id.toString()).emit("new-job", { jobId: job.jobId, files: job.files.length }) //socket
+
+    // Auto-delete files after 30 minutes
+    setTimeout(async () => {
+      try {
+        const freshJob = await PrintJob.findOne({ jobId: job.jobId })
+        if (freshJob) {
+          for (const file of freshJob.files) {
+            if (file.url) {
+              const publicId = file.url.split("/").pop().split(".")[0]
+              await cloudinary.uploader.destroy("printshop-files/" + publicId)
+            }
+          }
+          const updatedFiles = freshJob.files.map(f => ({ ...f.toObject(), url: "" }))
+          await PrintJob.findOneAndUpdate({ jobId: job.jobId }, { files: updatedFiles })
+          console.log(`Auto-deleted files for job ${job.jobId} after 30 min`)
+        }
+      } catch (err) {
+        console.log("Auto-delete error:", err.message)
+      }
+    }, 30 * 60 * 1000)
 
     return res.status(201).json({
       success: true,
@@ -120,5 +141,36 @@ exports.getShopDetails = async (req, res) => {
       success: false,
       message: error.message,
     })
+  }
+}
+
+// Customer marks job as collected (deletes files from cloudinary)
+exports.customerCollected = async (req, res) => {
+  try {
+    const { jobId } = req.params
+    const job = await PrintJob.findOne({ jobId })
+
+    if (!job) {
+      return res.status(404).json({ success: false, message: "Job not found" })
+    }
+
+    if (job.status !== "ready") {
+      return res.status(400).json({ success: false, message: "Job is not ready yet" })
+    }
+
+    // Delete files from cloudinary
+    for (const file of job.files) {
+      if (file.url) {
+        const publicId = file.url.split("/").pop().split(".")[0]
+        await cloudinary.uploader.destroy("printshop-files/" + publicId)
+      }
+    }
+
+    const updatedFiles = job.files.map(f => ({ ...f.toObject(), url: "" }))
+    await PrintJob.findOneAndUpdate({ jobId }, { files: updatedFiles, status: "completed" })
+
+    return res.status(200).json({ success: true, message: "Job marked as collected" })
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message })
   }
 }
