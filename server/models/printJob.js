@@ -16,6 +16,7 @@ const printJobSchema = new mongoose.Schema(
       {
         name: { type: String, required: true },
         url: { type: String, required: true },
+        publicId: { type: String },
         size: { type: Number },
         copies: { type: Number, default: 1, min: 1 },
         colorMode: { type: String, enum: ["bw", "color"], default: "bw" },
@@ -41,7 +42,7 @@ const printJobSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "ready", "completed", "cancelled"],
+      enum: ["pending", "ready", "completed"],
       default: "pending",
     },
 

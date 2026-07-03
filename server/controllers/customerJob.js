@@ -28,6 +28,7 @@ exports.createJob = async (req, res) => {
 const files = req.files.map((file, index) => ({
   name: file.originalname,
   url: file.path,
+  publicId: file.filename,
   size: file.size,
   copies: req.body.copies?.[index] || 1,
   colorMode: req.body.colorMode?.[index] || "bw",
@@ -55,9 +56,8 @@ io.to(shopkeeper._id.toString()).emit("new-job", { jobId: job.jobId, files: job.
         const freshJob = await PrintJob.findOne({ jobId: job.jobId })
         if (freshJob) {
           for (const file of freshJob.files) {
-            if (file.url) {
-              const publicId = file.url.split("/").pop().split(".")[0]
-              await cloudinary.uploader.destroy("printshop-files/" + publicId)
+            if (file.publicId) {
+              await cloudinary.uploader.destroy("printshop-files/" + file.publicId)
             }
           }
           const updatedFiles = freshJob.files.map(f => ({ ...f.toObject(), url: "" }))
@@ -160,9 +160,8 @@ exports.customerCollected = async (req, res) => {
 
     // Delete files from cloudinary
     for (const file of job.files) {
-      if (file.url) {
-        const publicId = file.url.split("/").pop().split(".")[0]
-        await cloudinary.uploader.destroy("printshop-files/" + publicId)
+      if (file.publicId) {
+        await cloudinary.uploader.destroy("printshop-files/" + file.publicId)
       }
     }
 

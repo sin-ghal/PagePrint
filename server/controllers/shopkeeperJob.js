@@ -41,9 +41,8 @@ exports.updateJobStatus = async (req, res) => {
 
     if (status === "completed") {
   for (const file of job.files) {
-    if (file.url) {
-      const publicId = file.url.split("/").pop().split(".")[0]
-      await cloudinary.uploader.destroy("printshop-files/" + publicId)
+    if (file.publicId) {
+      await cloudinary.uploader.destroy("printshop-files/" + file.publicId)
     }
   }
   // Sirf url hataao, baaki metadata (name, copies, colorMode etc.) rahe
@@ -125,9 +124,8 @@ exports.isPaid = async (req, res) => {
 
     // Delete files from cloudinary, keep metadata
     for (const file of job.files) {
-      if (file.url) {
-        const publicId = file.url.split("/").pop().split(".")[0]
-        await cloudinary.uploader.destroy("printshop-files/" + publicId)
+      if (file.publicId) {
+        await cloudinary.uploader.destroy("printshop-files/" + file.publicId)
       }
     }
     const updatedFiles = job.files.map(f => ({ ...f.toObject(), url: "" }))
