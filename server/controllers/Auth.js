@@ -255,53 +255,64 @@ res.cookie("token",token,options).status(200).json({
     }
 }
 
-//change password
-exports.changePassword = async (req, res) => {
-  try {
-    const userId = req.user.id
-    const { oldPassword, newPassword } = req.body
 
-    if (!oldPassword || !newPassword) {
+
+
+
+//forgot password - reset with OTP
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body
+
+    if (!email || !otp || !newPassword) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
       })
     }
 
-    const user = await User.findById(userId)
-
+    // Check user exists
+    const user = await User.findOne({ email })
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found",
+        message: "User not found with this email",
       })
     }
 
-    const isPasswordMatch = await bcrypt.compare(oldPassword, user.password)
-
-    if (!isPasswordMatch) {
-      return res.status(401).json({
+    // Verify OTP
+    const recentOtp = await OTP.findOne({ email }).sort({ createdAt: -1 })
+    if (!recentOtp) {
+      return res.status(400).json({
         success: false,
-        message: "Current password is incorrect",
+        message: "OTP not found. Request a new one.",
       })
     }
 
+    if (otp !== recentOtp.otp) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid OTP",
+      })
+    }
+
+    // Hash new password
     const hashedPassword = await bcrypt.hash(newPassword, 10)
 
-    await User.findByIdAndUpdate(
-      userId,
-      { password: hashedPassword },
-      { new: true }
-    )
+    // Update password
+    await User.findByIdAndUpdate(user._id, { password: hashedPassword })
+
+    // Delete OTP
+    await OTP.deleteMany({ email })
 
     return res.status(200).json({
       success: true,
-      message: "Password updated successfully",
+      message: "Password reset successfully",
     })
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: "Could not update password",
+      message: error.message,
     })
   }
 }

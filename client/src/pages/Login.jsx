@@ -147,7 +147,13 @@ const Login = () => {
             </form>
           </div>
 
-          <p className="text-center text-sm mt-6" style={{ color: "#6b7280" }}>
+          <p className="text-center text-sm mt-4" style={{ color: "#6b7280" }}>
+            <Link to="/forgot-password" style={{ color: "#c0392b", fontWeight: 500 }}>
+              Forgot Password?
+            </Link>
+          </p>
+
+          <p className="text-center text-sm mt-3" style={{ color: "#6b7280" }}>
             Don't have an account?{" "}
             <Link to="/register" style={{ color: "#c0392b", fontWeight: 600 }}>
               Register
