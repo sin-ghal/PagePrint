@@ -152,6 +152,28 @@ const JobStatus = () => {
           🔄 Refresh Status
         </button>
 
+        {/* Customer collected button - only when ready */}
+        {job && job.status === "ready" && (
+          <button
+            onClick={async () => {
+              const toastId = toast.loading("Confirming collection...")
+              try {
+                const res = await API.put(`/customer/collected/${jobId}`)
+                if (res.data.success) {
+                  toast.success("✅ Collected! Files deleted for your privacy.", { id: toastId })
+                  fetchStatus()
+                }
+              } catch (err) {
+                toast.error("Failed. Try again.", { id: toastId })
+              }
+            }}
+            className="w-full mt-3 py-3 rounded-xl font-medium transition hover:shadow-lg hover:scale-[1.02] active:scale-95 cursor-pointer"
+            style={{ backgroundColor: "#10b981", color: "#fff" }}
+          >
+            ✅ I Collected My Print
+          </button>
+        )}
+
         <p className="text-center text-xs mt-4" style={{ color: "#9ca3af" }}>
           Page auto-refreshes. You can also bookmark this link.
         </p>

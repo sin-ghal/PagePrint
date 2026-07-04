@@ -131,7 +131,7 @@ const MyQR = () => {
           )}
 
           <p className="text-xs mb-6" style={{ color: "#9ca3af" }}>
-            Your link: pageprint.com/shop/{shopSlug}
+            Your link: page-print.vercel.app/shop/{shopSlug}
           </p>
 
           {/* Actions */}
