@@ -255,10 +255,6 @@ res.cookie("token",token,options).status(200).json({
     }
 }
 
-
-
-
-
 //forgot password - reset with OTP
 exports.resetPassword = async (req, res) => {
   try {
