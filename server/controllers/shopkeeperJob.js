@@ -51,11 +51,6 @@ exports.updateJobStatus = async (req, res) => {
   console.log(`Files deleted from cloud for job ${jobId}, metadata preserved`)
 }
 
-    //socket - emit status update to job room
-    const { getIO } = require("../config/socket") //socket
-    const io = getIO() //socket
-    io.to(job.jobId).emit("job-status-update", { jobId: job.jobId, status: job.status }) //socket
-
     return res.status(200).json({
       success: true,
       message: "Status updated",

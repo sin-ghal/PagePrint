@@ -18,12 +18,6 @@ exports.initSocket = (server) => {
       console.log(`Shopkeeper ${shopkeeperId} joined room`)
     })
 
-    //socket - customer joins job room to get status updates
-    socket.on("join-job", (jobId) => {
-      socket.join(jobId)
-      console.log(`Customer joined job room: ${jobId}`)
-    })
-
     socket.on("disconnect", () => {
       console.log("Socket disconnected:", socket.id)
     })

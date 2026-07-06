@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
 import toast from "react-hot-toast"
-import { io } from "socket.io-client" //socket
 import API from "../services/api"
 
 const JobStatus = () => {
@@ -11,19 +10,6 @@ const JobStatus = () => {
 
   useEffect(() => {
     fetchStatus()
-
-    //socket - listen for real-time status updates
-    const socket = io(import.meta.env.VITE_BACKEND_URL || "http://localhost:4000") //socket
-    socket.emit("join-job", jobId) //socket - join job room
-
-    socket.on("job-status-update", (data) => { //socket - listen
-      if (data.jobId === jobId) {
-        toast.success(`Status updated: ${data.status}`)
-        fetchStatus()
-      }
-    })
-
-    return () => socket.disconnect() //socket - cleanup
   }, [])
 
   const fetchStatus = async () => {
