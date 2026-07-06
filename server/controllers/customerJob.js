@@ -1,7 +1,7 @@
 const PrintJob = require("../models/printJob")
 const Shopkeeper = require("../models/Shopkeeper")
 const cloudinary = require("cloudinary").v2
-const { v4: uuidv4 } = require("uuid")
+const crypto = require("crypto")
 const { getIO } = require("../config/socket") //socket
 
 // Customer creates a print job
@@ -37,7 +37,7 @@ const files = req.files.map((file, index) => ({
   pages: req.body.pages?.[index] || "all",
 }))
 
-    const jobId = "JOB-" + uuidv4().slice(0, 6).toUpperCase()
+    const jobId = "JOB-" + crypto.randomUUID().slice(0, 6).toUpperCase()
 
   const job = await PrintJob.create({
   shopkeeper: shopkeeper._id,
