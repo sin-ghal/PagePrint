@@ -17,20 +17,18 @@ const otpSchema = new mongoose.Schema({
   },
 });
 
-async function sendVerificationEmail(email, otp) {
+
+
+otpSchema.pre("save", async function () {
     try {
         await mailSender(
-            email,
-            "Verification Email From page print",
-            `<h2>Your OTP is ${otp}</h2>`
+            this.email,
+            "Verification Email From PagePrint",
+            `<h2>Your OTP is ${this.otp}</h2>`
         )
     } catch (error) {
         console.log("Error occurred while sending email", error)
     }
-}
-
-otpSchema.pre("save", async function () {
-    await sendVerificationEmail(this.email, this.otp)
 })
 
 module.exports = mongoose.model("OTP", otpSchema);
