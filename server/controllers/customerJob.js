@@ -143,33 +143,3 @@ exports.getShopDetails = async (req, res) => {
     })
   }
 }
-
-// Customer marks job as collected (deletes files from cloudinary)
-exports.customerCollected = async (req, res) => {
-  try {
-    const { jobId } = req.params
-    const job = await PrintJob.findOne({ jobId })
-
-    if (!job) {
-      return res.status(404).json({ success: false, message: "Job not found" })
-    }
-
-    if (job.status !== "ready") {
-      return res.status(400).json({ success: false, message: "Job is not ready yet" })
-    }
-
-    // Delete files from cloudinary
-    for (const file of job.files) {
-      if (file.publicId) {
-        await cloudinary.uploader.destroy("printshop-files/" + file.publicId)
-      }
-    }
-
-    const updatedFiles = job.files.map(f => ({ ...f.toObject(), url: "" }))
-    await PrintJob.findOneAndUpdate({ jobId }, { files: updatedFiles, status: "completed" })
-
-    return res.status(200).json({ success: true, message: "Job marked as collected" })
-  } catch (error) {
-    return res.status(500).json({ success: false, message: error.message })
-  }
-}

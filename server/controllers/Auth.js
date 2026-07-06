@@ -126,15 +126,6 @@ exports.signup = async (req, res) => {
             })
         }
 
-         //manually check the expiry 
-        const timediff = Date.now() - recentOtp.createdAt
-        if (timediff > 5 * 60 * 1000) {
-            return res.status(400).json({
-                success: false,
-                message: "OTP expired",
-            })
-        }
-        //manually checked the expiry
         if (otp !== recentOtp.otp) {
             return res.status(400).json({
                 success: false,

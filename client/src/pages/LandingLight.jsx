@@ -2,6 +2,8 @@ import { Link } from "react-router-dom"
 import TaglineTyper from "../components/TaglineTyper"
 
 const LandingLight = () => {
+  const token = localStorage.getItem("token")
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f8f9fa" }}>
       {/* Navbar */}
@@ -11,27 +13,32 @@ const LandingLight = () => {
           <h1 className="text-lg md:text-2xl font-bold" style={{ color: "#1a1a2e" }}>Page<span style={{ color: "#c0392b" }}>Print</span></h1>
         </div>
         <div className="flex gap-2 md:gap-3">
-          <Link
-            to="/login"
-            className="hidden md:inline-block px-5 py-2.5 rounded-lg text-sm font-medium transition hover:shadow-lg hover:scale-105 active:scale-95"
-            style={{ color: "#1a1a2e", border: "1px solid #e5e7eb" }}
-          >
-            Track Job
-          </Link>
-          <Link
-            to="/login"
-            className="px-3 md:px-5 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-medium transition hover:shadow-lg hover:scale-105 active:scale-95"
-            style={{ color: "#1a1a2e", border: "1px solid #e5e7eb" }}
-          >
-            Login
-          </Link>
-          <Link
-            to="/register"
-            className="px-3 md:px-5 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-medium transition hover:shadow-lg hover:scale-105 active:scale-95"
-            style={{ backgroundColor: "#c0392b", color: "#fff" }}
-          >
-            Register
-          </Link>
+          {token ? (
+            <Link
+              to="/dashboard"
+              className="px-3 md:px-5 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-medium transition hover:shadow-lg hover:scale-105 active:scale-95"
+              style={{ backgroundColor: "#c0392b", color: "#fff" }}
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="px-3 md:px-5 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-medium transition hover:shadow-lg hover:scale-105 active:scale-95"
+                style={{ color: "#1a1a2e", border: "1px solid #e5e7eb" }}
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                className="px-3 md:px-5 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-medium transition hover:shadow-lg hover:scale-105 active:scale-95"
+                style={{ backgroundColor: "#c0392b", color: "#fff" }}
+              >
+                Register
+              </Link>
+            </>
+          )}
         </div>
       </nav>
 
