@@ -6,11 +6,11 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: (req, file) => {
     const ext = file.originalname.split(".").pop().toLowerCase()
-    const isImage = ["png", "jpg", "jpeg"].includes(ext)
+    const rawExts = ["doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt", "csv"]
 
     return {
       folder: "printshop-files",
-      resource_type: isImage ? "image" : "raw",
+      resource_type: rawExts.includes(ext) ? "raw" : "image",
       allowed_formats: ["pdf","doc","docx","xls","xlsx","ppt","pptx","png","jpg","jpeg","txt","csv"],
     }
   },
