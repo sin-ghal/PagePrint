@@ -5,7 +5,9 @@ const cloudinary = require("cloudinary").v2
 exports.getShopJobs = async (req, res) => {
   try {
     const shopkeeperId = req.user.id
-    const jobs = await PrintJob.find({ shopkeeper: shopkeeperId }).sort({ createdAt: -1 })
+    // const jobs = await PrintJob.find({ shopkeeper: shopkeeperId }).sort({ createdAt: -1 })
+    const jobs = await PrintJob.find({ shopkeeper: shopkeeperId }).sort({ createdAt: -1 }).lean()
+
 
     return res.status(200).json({
       success: true,
