@@ -50,4 +50,7 @@ const printJobSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+
+printJobSchema.index({ shopkeeper: 1, createdAt: -1 })
+
 module.exports = mongoose.model("PrintJob", printJobSchema);
