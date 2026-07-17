@@ -119,6 +119,8 @@ exports.getShopDetails = async (req, res) => {
   try {
     const { shopSlug } = req.params
     const shop = await Shopkeeper.findOne({ shopSlug })
+      .select("shopName shopAddress phone name")
+      .lean()
 
     if (!shop) {
       return res.status(404).json({

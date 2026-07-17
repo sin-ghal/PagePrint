@@ -4,7 +4,7 @@ require("dotenv").config()
 
 const PrintJob = require("./models/printJob")
 
-const SHOPKEEPER_ID = "6a599875cc4ecb039fed29ca"
+const SHOPKEEPER_ID = "6a59bdbb5a8f17e2315e83b7"
 
 const generateJobs = (count) => {
   const jobs = []
@@ -42,7 +42,7 @@ const testing = async () => {
 
     const jobs = generateJobs(10000)
     await PrintJob.insertMany(jobs)
-    console.log("✅ 10000 jobs inserted!")
+    console.log("10000 jobs inserted!")
 
     process.exit(0)
   } catch (err) {
