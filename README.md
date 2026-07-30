@@ -7,7 +7,7 @@ A full-stack web application that allows customers to upload documents to a prin
 | Role | Link |
 |------|------|
 | 🏪 Shopkeeper (Dashboard) | [page-print.vercel.app](https://page-print.vercel.app) |
-| 🛒 Customer (Upload Page) | [page-print.vercel.app/shop/agrawal-xerox-and-prints-ms7lva9q](page-print.vercel.app/shop/agrawal-xerox-and-prints-ms7lva9q) |
+| 🛒 Customer (Upload Page) | [page-print.vercel.app/shop/agrawal-xerox-and-prints-ms7lva9q](https://page-print.vercel.app/shop/agrawal-xerox-and-prints-ms7lva9q) |
 
 > **Note:** Backend is hosted on Render free tier — first request may take ~30s due to cold start.
 
@@ -28,7 +28,7 @@ A full-stack web application that allows customers to upload documents to a prin
 ### 📱 My QR Code
 ![My QR](./screenshots/my-qr.png)
 
-## � Featuresa
+## ✨ Features
 
 ### 🏪 Shopkeeper Side
 - QR code generation for shop
@@ -88,7 +88,7 @@ A full-stack web application that allows customers to upload documents to a prin
 | GET | `/my-qr` | Get shop QR code |
 
 
-# 👨‍💻 Author
+## 👨‍💻 Author
 
 **Anuj Singhal**
 
