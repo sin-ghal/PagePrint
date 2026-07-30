@@ -13,13 +13,17 @@ A full-stack web application that allows customers to upload documents to a prin
 
 ## 📸 Screenshots
 
-| Shopkeeper Dashboard | Customer Upload Page |
-|---|---|
-| ![Dashboard](./screenshots/dashboard.png) | ![Upload](./screenshots/upload.png) |
+### 🏪 Shopkeeper Dashboard
+![Dashboard](./screenshots/dashboard.png)
 
-| Landing Page | Login Page |
-|---|---|
-| ![Landing](./screenshots/landing.png) | ![Login](./screenshots/login.png) |
+### 🛒 Customer Upload Page
+![Upload](./screenshots/upload.png)
+
+### 🏠 Landing Page
+![Landing](./screenshots/landing.png)
+
+### 🔐 Login Page
+![Login](./screenshots/login.png)
 
 ## 🚀 Features
 
