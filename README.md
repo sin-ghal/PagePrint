@@ -88,7 +88,7 @@ A full-stack web application that allows customers to upload documents to a prin
 | GET | `/my-qr` | Get shop QR code |
 
 
-## 👨‍💻 Author
+## 👨‍💻 About Me
 
 **Anuj Singhal**
 
