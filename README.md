@@ -13,19 +13,22 @@ A full-stack web application that allows customers to upload documents to a prin
 
 ## 📸 Screenshots
 
+### 🏠 Landing Page
+![Landing](./screenshots/landing.png)
+
 ### 🏪 Shopkeeper Dashboard
 ![Dashboard](./screenshots/dashboard.png)
 
 ### 🛒 Customer Upload Page
 ![Upload](./screenshots/upload.png)
 
-### 🏠 Landing Page
-![Landing](./screenshots/landing.png)
+### 📝 Register Page
+![Register](./screenshots/register.png)
 
-### 🔐 Login Page
-![Login](./screenshots/login.png)
+### 📱 My QR Code
+![My QR](./screenshots/my-qr.png)
 
-## 🚀 Features
+## � Featuresa
 
 ### 🏪 Shopkeeper Side
 - QR code generation for shop
