@@ -22,11 +22,11 @@ A full-stack web application that allows customers to upload documents to a prin
 ### 🛒 Customer Upload Page
 ![Upload](./screenshots/upload.png)
 
-### 📝 Register Page
-![Register](./screenshots/register.png)
-
-### 📱 My QR Code
+### � My QR Code
 ![My QR](./screenshots/my-qr.png)
+
+### � Register Page
+![Register](./screenshots/register.png)
 
 ## ✨ Features
 
