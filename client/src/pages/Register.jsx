@@ -8,6 +8,7 @@ const Register = () => {
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
+  const [locationLoading, setLocationLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
     shopName: "",
@@ -21,6 +22,45 @@ const Register = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+
+  const fetchCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      return toast.error("Geolocation is not supported by your browser")
+    }
+
+    setLocationLoading(true)
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`
+          )
+          const data = await res.json()
+          if (data && data.display_name) {
+            setFormData((prev) => ({ ...prev, shopAddress: data.display_name }))
+            toast.success("Location fetched successfully!")
+          } else {
+            toast.error("Could not fetch address")
+          }
+        } catch (err) {
+          toast.error("Failed to fetch address from location")
+        }
+        setLocationLoading(false)
+      },
+      (error) => {
+        setLocationLoading(false)
+        if (error.code === error.PERMISSION_DENIED) {
+          toast.error("Location permission denied. Please allow location access.")
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+          toast.error("Location unavailable. Try again.")
+        } else {
+          toast.error("Failed to get location")
+        }
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    )
   }
 
   const handleSendOtp = async (e) => {
@@ -264,7 +304,28 @@ const Register = () => {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-1.5 block" style={{ color: "#374151" }}>Shop Address</label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-sm font-medium" style={{ color: "#374151" }}>Shop Address</label>
+                    <button
+                      type="button"
+                      onClick={fetchCurrentLocation}
+                      disabled={locationLoading}
+                      className="text-sm font-semibold flex items-center gap-1.5 cursor-pointer transition hover:opacity-80 px-2 py-1 rounded-md"
+                      style={{ color: "#c0392b", backgroundColor: "#fdecea", border: "1px solid #f5c6cb" }}
+                    >
+                      {locationLoading ? (
+                        <>
+                          <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24" fill="none">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                          </svg>
+                          Detecting...
+                        </>
+                      ) : (
+                        <>📍 Use Current Location</>
+                      )}
+                    </button>
+                  </div>
                   <input
                     type="text"
                     name="shopAddress"
