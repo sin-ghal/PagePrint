@@ -160,9 +160,7 @@ const JobStatus = () => {
           </button>
         )}
 
-        <p className="text-center text-xs mt-4" style={{ color: "#9ca3af" }}>
-          Page auto-refreshes. You can also bookmark this link.
-        </p>
+
       </div>
     </div>
   )
