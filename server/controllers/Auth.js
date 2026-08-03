@@ -132,7 +132,7 @@ const deleteOtp = await OTP.deleteMany({ email })
         //hashing done
 
 //create shop slug  
-const shopSlug = shopName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+$/, "") + "-" + Date.now().toString(36)
+const shopSlug = shopName.toLowerCase().replaceAll(" ", "-") + "-" + Date.now();
 
 //QR code generate
 const qrCode = await generateQR(shopSlug)
