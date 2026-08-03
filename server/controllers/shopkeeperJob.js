@@ -1,6 +1,35 @@
 const PrintJob = require("../models/printJob")
 const cloudinary = require("cloudinary").v2
 
+
+//download QR code
+exports.getMyQR = async (req, res) => {
+  try {
+    const Shopkeeper = require("../models/Shopkeeper")
+    const shop = await Shopkeeper.findById(req.user.id)
+
+    if (!shop) {
+      return res.status(404).json({
+        success: false,
+        message: "Shop not found",
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      qrCode: shop.qrCode,
+      shopSlug: shop.shopSlug,
+      shopName: shop.shopName,
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    })
+  }
+}
+
+
 // Shopkeeper gets all their jobs
 exports.getShopJobs = async (req, res) => {
   try {
@@ -141,29 +170,3 @@ exports.isPaid = async (req, res) => {
   }
 }
 
-//download QR code
-exports.getMyQR = async (req, res) => {
-  try {
-    const Shopkeeper = require("../models/Shopkeeper")
-    const shop = await Shopkeeper.findById(req.user.id)
-
-    if (!shop) {
-      return res.status(404).json({
-        success: false,
-        message: "Shop not found",
-      })
-    }
-
-    return res.status(200).json({
-      success: true,
-      qrCode: shop.qrCode,
-      shopSlug: shop.shopSlug,
-      shopName: shop.shopName,
-    })
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    })
-  }
-}
