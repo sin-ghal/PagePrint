@@ -43,16 +43,6 @@ if (!emailRegex.test(email)) {
             lowerCaseAlphabets: false,
             specialChars: false
         })
-        let result = await OTP.findOne({ otp })  //duplicate milaa
-
-        while (result) {
-            otp = otpGenerator.generate(6, {
-                upperCaseAlphabets: false,
-                lowerCaseAlphabets: false,
-                specialChars: false
-            })
-            result = await OTP.findOne({ otp })
-        }
 
         const response = await OTP.create({ email, otp })
 
