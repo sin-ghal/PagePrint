@@ -22,10 +22,10 @@ A full-stack web application that allows customers to upload documents to a prin
 ### 🏪 Shopkeeper Dashboard
 ![Dashboard](./screenshots/dashboard.png)
 
-### � My QR Code
+### 📱 My QR Code
 ![My QR](./screenshots/my-qr.png)
 
-### �🛒 Customer Upload Page
+### 📤 Customer Upload Page
 ![Upload](./screenshots/upload.png)
 
 ### 📋 Job Status Page
