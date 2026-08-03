@@ -16,17 +16,20 @@ A full-stack web application that allows customers to upload documents to a prin
 ### 🏠 Landing Page
 ![Landing](./screenshots/landing.png)
 
+### 📝 Register Page
+![Register](./screenshots/register.png)
+
 ### 🏪 Shopkeeper Dashboard
 ![Dashboard](./screenshots/dashboard.png)
-
-### 🛒 Customer Upload Page
-![Upload](./screenshots/upload.png)
 
 ### � My QR Code
 ![My QR](./screenshots/my-qr.png)
 
-### � Register Page
-![Register](./screenshots/register.png)
+### �🛒 Customer Upload Page
+![Upload](./screenshots/upload.png)
+
+### 📋 Job Status Page
+![Job Status](./screenshots/jobStatus.png)
 
 ## ✨ Features
 
