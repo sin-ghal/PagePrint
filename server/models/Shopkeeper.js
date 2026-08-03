@@ -39,10 +39,6 @@ const shopkeeperSchema = new mongoose.Schema({
   qrCode: {
     type: String,
   },
-  isVerified: {
-    type: Boolean,
-    default: false,
-  },
 }, 
 { timestamps: true });
 

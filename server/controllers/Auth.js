@@ -144,7 +144,6 @@ const qrCode = await generateQR(shopSlug)
             password: hashedPass,
             phone,
             shopAddress,
-            isVerified: true,
             shopSlug,
             qrCode
         })
