@@ -21,7 +21,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/my-qr" element={<MyQR />} />
         <Route path="/shop/:shopSlug" element={<Upload />} />
-        <Route path="/job/:jobId" element={<JobStatus />} />
+        <Route path="/status/:jobId" element={<JobStatus />} />
       </Routes>
     </BrowserRouter>
   )

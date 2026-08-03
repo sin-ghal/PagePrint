@@ -112,7 +112,7 @@ const Upload = () => {
           <p className="text-xs mt-4" style={{ color: "#9ca3af" }}>
             Track your job:{" "}
             <a
-              href={`/job/${jobId}`}
+              href={`/status/${jobId}`}
               className="font-medium"
               style={{ color: "#c0392b", textDecoration: "underline" }}
             >

@@ -2,14 +2,14 @@ const mongoose = require("mongoose");
 
 const printJobSchema = new mongoose.Schema(
   {
+     jobId: {
+      type: String,
+      unique: true,
+      required: true,
+    },
     shopkeeper: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Shopkeeper",
-      required: true,
-    },
-    jobId: {
-      type: String,
-      unique: true,
       required: true,
     },
     files: [
@@ -49,7 +49,6 @@ const printJobSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
 
 printJobSchema.index({ shopkeeper: 1, createdAt: -1 })
 
