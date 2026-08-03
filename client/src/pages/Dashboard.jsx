@@ -220,13 +220,7 @@ const Dashboard = () => {
               </button>
             ))}
           </div>
-          <button
-            onClick={fetchJobs}
-            className="px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition hover:shadow-lg hover:scale-105 active:scale-95 active:rotate-180"
-            style={{ backgroundColor: "#fff", color: "#c0392b", border: "1px solid rgba(192,57,43,0.2)", transition: "all 0.3s ease" }}
-          >
-            🔄 Refresh
-          </button>
+        
         </div>
 
         {/* Jobs */}
