@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const printJobSchema = new mongoose.Schema(
+const totalJobsSchema = new mongoose.Schema(
   {
      jobId: {
       type: String,
@@ -50,6 +50,6 @@ const printJobSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-printJobSchema.index({ shopkeeper: 1, createdAt: -1 })
+totalJobsSchema.index({ shopkeeper: 1, createdAt: -1 })
 
-module.exports = mongoose.model("PrintJob", printJobSchema);
+module.exports = mongoose.model("TotalJobs", totalJobsSchema);

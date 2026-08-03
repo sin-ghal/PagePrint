@@ -1,4 +1,4 @@
-const PrintJob = require("../models/printJob")
+const TotalJobs = require("../models/totalJobs")
 const Shopkeeper = require("../models/Shopkeeper")
 const cloudinary = require("cloudinary").v2
 const crypto = require("crypto")
@@ -39,7 +39,7 @@ const files = req.files.map((file, index) => ({
 
     const jobId = "JOB-" + crypto.randomUUID().slice(0, 6).toUpperCase()
 
-  const job = await PrintJob.create({
+  const job = await TotalJobs.create({
   shopkeeper: shopkeeper._id,
   jobId,
   files,
@@ -53,7 +53,7 @@ io.to(shopkeeper._id.toString()).emit("new-job", { jobId: job.jobId, files: job.
     // Auto-delete files after 30 minutes
     setTimeout(async () => {
       try {
-        const freshJob = await PrintJob.findOne({ jobId: job.jobId })
+        const freshJob = await TotalJobs.findOne({ jobId: job.jobId })
         if (freshJob) {
           for (const file of freshJob.files) {
             if (file.publicId) {
@@ -61,7 +61,7 @@ io.to(shopkeeper._id.toString()).emit("new-job", { jobId: job.jobId, files: job.
             }
           }
           const updatedFiles = freshJob.files.map(f => ({ ...f.toObject(), url: "" }))
-          await PrintJob.findOneAndUpdate({ jobId: job.jobId }, { files: updatedFiles })
+          await TotalJobs.findOneAndUpdate({ jobId: job.jobId }, { files: updatedFiles })
           console.log(`Auto-deleted files for job ${job.jobId} after 30 min`)
         }
       } catch (err) {
@@ -87,7 +87,7 @@ io.to(shopkeeper._id.toString()).emit("new-job", { jobId: job.jobId, files: job.
 exports.getJobStatus = async (req, res) => {
   try {
     const { jobId } = req.params
-    const job = await PrintJob.findOne({ jobId })
+    const job = await TotalJobs.findOne({ jobId })
 
     if (!job) {
       return res.status(404).json({

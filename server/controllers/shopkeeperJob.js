@@ -1,4 +1,4 @@
-const PrintJob = require("../models/printJob")
+const TotalJobs = require("../models/totalJobs")
 const cloudinary = require("cloudinary").v2
 
 
@@ -34,8 +34,8 @@ exports.getMyQR = async (req, res) => {
 exports.getShopJobs = async (req, res) => {
   try {
     const shopkeeperId = req.user.id
-    // const jobs = await PrintJob.find({ shopkeeper: shopkeeperId }).sort({ createdAt: -1 })
-    const jobs = await PrintJob.find({ shopkeeper: shopkeeperId }).sort({ createdAt: -1 }).lean()
+    // const jobs = await TotalJobs.find({ shopkeeper: shopkeeperId }).sort({ createdAt: -1 })
+    const jobs = await TotalJobs.find({ shopkeeper: shopkeeperId }).sort({ createdAt: -1 }).lean()
 
 
     return res.status(200).json({
@@ -57,7 +57,7 @@ exports.updateJobStatus = async (req, res) => {
     const { status } = req.body
     const shopkeeperId = req.user.id
 
-    const job = await PrintJob.findOneAndUpdate(
+    const job = await TotalJobs.findOneAndUpdate(
       { jobId, shopkeeper: shopkeeperId },
       { status },
       { new: true }
@@ -78,7 +78,7 @@ exports.updateJobStatus = async (req, res) => {
   }
   // Sirf url hataao, baaki metadata (name, copies, colorMode etc.) rahe
   const updatedFiles = job.files.map(f => ({ ...f.toObject(), url: "" }))
-  await PrintJob.findOneAndUpdate({ jobId }, { files: updatedFiles })
+  await TotalJobs.findOneAndUpdate({ jobId }, { files: updatedFiles })
   console.log(`Files deleted from cloud for job ${jobId}, metadata preserved`)
 }
 
@@ -102,7 +102,7 @@ exports.setJobPrice = async (req, res) => {
     const { price } = req.body
     const shopkeeperId = req.user.id
 
-    const job = await PrintJob.findOneAndUpdate(
+    const job = await TotalJobs.findOneAndUpdate(
       { jobId, shopkeeper: shopkeeperId },
       { price },
       { new: true }
@@ -135,7 +135,7 @@ exports.isPaid = async (req, res) => {
     const { jobId } = req.params
     const shopkeeperId = req.user.id
 
-    const job = await PrintJob.findOneAndUpdate(
+    const job = await TotalJobs.findOneAndUpdate(
       { jobId, shopkeeper: shopkeeperId },
       { isPaid: true },
       { new: true }
@@ -155,7 +155,7 @@ exports.isPaid = async (req, res) => {
       }
     }
     const updatedFiles = job.files.map(f => ({ ...f.toObject(), url: "" }))
-    await PrintJob.findOneAndUpdate({ jobId }, { files: updatedFiles, status: "completed" })
+    await TotalJobs.findOneAndUpdate({ jobId }, { files: updatedFiles, status: "completed" })
 
     return res.status(200).json({
       success: true,
