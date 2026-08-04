@@ -37,9 +37,6 @@ const totalJobsSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    paymentId: {
-      type: String,
-    },
     status: {
       type: String,
       enum: ["pending", "ready", "completed"],
