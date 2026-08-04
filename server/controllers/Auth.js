@@ -89,6 +89,16 @@ exports.signup = async (req, res) => {
                 message: "All Fields are required",
             })
         }
+
+           //email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+if (!emailRegex.test(email)) {
+    return res.status(400).json({
+        success: false,
+        message: "Enter a valid email address",
+    })
+}
         // Check if password and confirm password match
         if (password !== confirmPassword) {
             return res.status(400).json({
@@ -176,6 +186,16 @@ exports.login = async (req,res)=>{
             })
         }
 //data validation done  
+
+   //email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+if (!emailRegex.test(email)) {
+    return res.status(400).json({
+        success: false,
+        message: "Enter a valid email address",
+    })
+}
 
 //user existence
         const user = await User.findOne({email})
