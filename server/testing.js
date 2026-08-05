@@ -2,7 +2,7 @@ const mongoose = require("mongoose")
 const crypto = require("crypto")
 require("dotenv").config()
 
-const PrintJob = require("./models/printJob")
+const TotalJobs = require("./models/totalJobs")
 
 const SHOPKEEPER_ID = "6a59cdec8624048bbe9a76a0"
 
@@ -41,7 +41,7 @@ const testing = async () => {
     console.log("DB connected")
 
     const jobs = generateJobs(10000)
-    await PrintJob.insertMany(jobs)
+    await TotalJobs.insertMany(jobs)
     console.log("10000 jobs inserted!")
 
     process.exit(0)
