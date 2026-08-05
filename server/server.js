@@ -1,8 +1,7 @@
 require("dotenv").config()
 
 const express = require("express")
-const app = express()
-const http = require("http") //socket
+const http = require("http")
 
 const cookieParser = require("cookie-parser")
 const cors = require("cors")
@@ -17,6 +16,8 @@ const authRoutes = require("./routes/authRoutes")
 const customerRoutes = require("./routes/customerRoutes")
 const shopkeeperRoutes = require("./routes/shopkeeperRoutes")
 
+const app = express()
+
 // Middleware
 app.use(express.json())
 app.use(cookieParser())
@@ -25,8 +26,8 @@ app.use(cors({
   credentials: true,
 }))
 
-const server = http.createServer(app) //socket
-initSocket(server) //socket
+const server = http.createServer(app)
+initSocket(server)
 
 // Routes
 app.use("/api/v1/auth", authRoutes)
