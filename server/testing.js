@@ -4,7 +4,7 @@ require("dotenv").config()
 
 const TotalJobs = require("./models/totalJobs")
 
-const SHOPKEEPER_ID = "6a59cdec8624048bbe9a76a0"
+const SHOPKEEPER_ID = "6a784e3dcdf117428bd17657"
 
 const generateJobs = (count) => {
   const jobs = []

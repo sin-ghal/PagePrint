@@ -1,11 +1,14 @@
-import { useState } from "react"
-import { useNavigate, Link } from "react-router-dom"
-import toast from "react-hot-toast"
-import TaglineTyper from "../components/TaglineTyper"
-import API from "../services/api"
+"use client"
 
-const Login = () => {
-  const navigate = useNavigate()
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+import toast from "react-hot-toast"
+import TaglineTyper from "../../components/TaglineTyper"
+import API from "../../services/api"
+
+export default function LoginPage() {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     email: "",
@@ -28,7 +31,7 @@ const Login = () => {
         localStorage.setItem("token", res.data.token)
         localStorage.setItem("user", JSON.stringify(res.data.user))
         toast.success("Login successful!")
-        navigate("/dashboard")
+        router.push("/dashboard")
       }
     } catch (err) {
       console.log("Login Error:", err)
@@ -54,10 +57,7 @@ const Login = () => {
 
         {/* Logo */}
         <div className="mb-8 flex flex-col items-center z-10">
-          <div
-            className="w-20 h-20 rounded-2xl flex items-center justify-center mb-4 shadow-md"
-            style={{ backgroundColor: "#e8f4f8" }}
-          >
+          <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-4 shadow-md" style={{ backgroundColor: "#e8f4f8" }}>
             <span className="text-4xl">🖨️</span>
           </div>
           <h1 className="text-3xl font-bold" style={{ color: "#1a1a2e" }}>Page<span style={{ color: "#c0392b" }}>Print</span></h1>
@@ -87,13 +87,9 @@ const Login = () => {
           </div>
 
           <div>
-            <a href="/" className="text-sm mb-4 inline-block transition hover:underline hover:scale-105" style={{ color: "#c0392b" }}>← Home</a>
-            <h2 className="text-2xl font-bold mb-1" style={{ color: "#1a1a2e" }}>
-              Welcome back
-            </h2>
-            <p className="text-sm mb-8" style={{ color: "#6b7280" }}>
-              Login to your shop dashboard
-            </p>
+            <Link href="/" className="text-sm mb-4 inline-block transition hover:underline hover:scale-105" style={{ color: "#c0392b" }}>← Home</Link>
+            <h2 className="text-2xl font-bold mb-1" style={{ color: "#1a1a2e" }}>Welcome back</h2>
+            <p className="text-sm mb-8" style={{ color: "#6b7280" }}>Login to your shop dashboard</p>
 
             <form onSubmit={handleLogin} className="space-y-5">
               <div>
@@ -148,21 +144,15 @@ const Login = () => {
           </div>
 
           <p className="text-center text-sm mt-4" style={{ color: "#6b7280" }}>
-            <Link to="/forgot-password" style={{ color: "#c0392b", fontWeight: 500 }}>
-              Forgot Password?
-            </Link>
+            <Link href="/forgot-password" style={{ color: "#c0392b", fontWeight: 500 }}>Forgot Password?</Link>
           </p>
 
           <p className="text-center text-sm mt-3" style={{ color: "#6b7280" }}>
-            Don't have an account?{" "}
-            <Link to="/register" style={{ color: "#c0392b", fontWeight: 600 }}>
-              Register
-            </Link>
+            Don&apos;t have an account?{" "}
+            <Link href="/register" style={{ color: "#c0392b", fontWeight: 600 }}>Register</Link>
           </p>
         </div>
       </div>
     </div>
   )
 }
-
-export default Login

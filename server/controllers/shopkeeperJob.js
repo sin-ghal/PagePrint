@@ -76,7 +76,7 @@ exports.updateJobStatus = async (req, res) => {
       await cloudinary.uploader.destroy("printshop-files/" + file.publicId)
     }
   }
-  // Sirf url hataao, baaki metadata (name, copies, colorMode etc.) rahe
+  
   const updatedFiles = job.files.map(f => ({ ...f.toObject(), url: "" }))
   await TotalJobs.findOneAndUpdate({ jobId }, { files: updatedFiles })
   console.log(`Files deleted from cloud for job ${jobId}, metadata preserved`)

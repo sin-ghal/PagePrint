@@ -1,10 +1,14 @@
-import { useState, useEffect } from "react"
-import { useParams } from "react-router-dom"
-import toast from "react-hot-toast"
-import API from "../services/api"
+"use client"
 
-const JobStatus = () => {
-  const { jobId } = useParams()
+import { useState, useEffect } from "react"
+import { useParams } from "next/navigation"
+import toast from "react-hot-toast"
+import API from "../../../services/api"
+
+export default function JobStatusPage() {
+  const params = useParams()
+  const jobId = params.jobId
+
   const [job, setJob] = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -159,11 +163,7 @@ const JobStatus = () => {
             ✅ I Collected My Print
           </button>
         )}
-
-
       </div>
     </div>
   )
 }
-
-export default JobStatus

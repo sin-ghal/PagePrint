@@ -1,10 +1,14 @@
-import { useState, useEffect } from "react"
-import { useParams } from "react-router-dom"
-import toast from "react-hot-toast"
-import API from "../services/api"
+"use client"
 
-const Upload = () => {
-  const { shopSlug } = useParams()
+import { useState, useEffect } from "react"
+import { useParams } from "next/navigation"
+import toast from "react-hot-toast"
+import API from "../../../services/api"
+
+export default function UploadPage() {
+  const params = useParams()
+  const shopSlug = params.shopSlug
+
   const [shop, setShop] = useState(null)
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
@@ -189,7 +193,6 @@ const Upload = () => {
                 <div key={i} className="p-5 rounded-xl" style={{ backgroundColor: "#fff", border: "1px solid #e5e7eb" }}>
                   <p className="font-semibold mb-3" style={{ color: "#1a1a2e" }}>📄 {file.name}</p>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {/* Copies */}
                     <div>
                       <label className="text-xs font-medium block mb-1" style={{ color: "#374151" }}>Copies</label>
                       <input
@@ -201,7 +204,6 @@ const Upload = () => {
                         style={{ border: "1px solid #e5e7eb", outline: "none" }}
                       />
                     </div>
-                    {/* Color */}
                     <div>
                       <label className="text-xs font-medium block mb-1" style={{ color: "#374151" }}>Color</label>
                       <select
@@ -214,7 +216,6 @@ const Upload = () => {
                         <option value="color">Color</option>
                       </select>
                     </div>
-                    {/* Paper Size */}
                     <div>
                       <label className="text-xs font-medium block mb-1" style={{ color: "#374151" }}>Paper</label>
                       <select
@@ -228,7 +229,6 @@ const Upload = () => {
                         <option value="Legal">Legal</option>
                       </select>
                     </div>
-                    {/* Sides */}
                     <div>
                       <label className="text-xs font-medium block mb-1" style={{ color: "#374151" }}>Sides</label>
                       <select
@@ -241,7 +241,6 @@ const Upload = () => {
                         <option value="duplex">Duplex</option>
                       </select>
                     </div>
-                    {/* Pages */}
                     <div>
                       <label className="text-xs font-medium block mb-1" style={{ color: "#374151" }}>Pages</label>
                       <input
@@ -303,7 +302,7 @@ const Upload = () => {
               type="button"
               onClick={() => {
                 const id = document.getElementById("trackInput").value.trim()
-                if (id) window.location.href = `/job/${id}`
+                if (id) window.location.href = `/status/${id}`
                 else toast.error("Enter a Job ID")
               }}
               className="px-5 py-3 rounded-lg font-medium transition hover:shadow-lg hover:scale-105 active:scale-95 cursor-pointer"
@@ -317,5 +316,3 @@ const Upload = () => {
     </div>
   )
 }
-
-export default Upload

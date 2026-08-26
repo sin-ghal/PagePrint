@@ -1,8 +1,15 @@
-import { Link } from "react-router-dom"
+"use client"
+
+import Link from "next/link"
+import { useEffect, useState } from "react"
 import TaglineTyper from "../components/TaglineTyper"
 
-const LandingLight = () => {
-  const token = localStorage.getItem("token")
+export default function LandingPage() {
+  const [token, setToken] = useState(null)
+
+  useEffect(() => {
+    setToken(localStorage.getItem("token"))
+  }, [])
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f8f9fa" }}>
@@ -15,7 +22,7 @@ const LandingLight = () => {
         <div className="flex gap-2 md:gap-3">
           {token ? (
             <Link
-              to="/dashboard"
+              href="/dashboard"
               className="px-3 md:px-5 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-medium transition hover:shadow-lg hover:scale-105 active:scale-95"
               style={{ backgroundColor: "#c0392b", color: "#fff" }}
             >
@@ -24,14 +31,14 @@ const LandingLight = () => {
           ) : (
             <>
               <Link
-                to="/login"
+                href="/login"
                 className="px-3 md:px-5 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-medium transition hover:shadow-lg hover:scale-105 active:scale-95"
                 style={{ color: "#1a1a2e", border: "1px solid #e5e7eb" }}
               >
                 Login
               </Link>
               <Link
-                to="/register"
+                href="/register"
                 className="px-3 md:px-5 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-medium transition hover:shadow-lg hover:scale-105 active:scale-95"
                 style={{ backgroundColor: "#c0392b", color: "#fff" }}
               >
@@ -58,7 +65,7 @@ const LandingLight = () => {
           🚀 The smartest way to receive print jobs from customers
         </div>
 
-        {/* Pain points - with logos */}
+        {/* Pain points */}
         <div className="mb-6 z-10 text-center">
           <p className="text-xl md:text-2xl font-bold flex items-center justify-center gap-3 flex-wrap" style={{ color: "#9ca3af" }}>
             <span className="inline-flex items-center gap-1" style={{ textDecoration: "line-through" }}>
@@ -102,14 +109,14 @@ const LandingLight = () => {
 
         <div className="flex flex-col sm:flex-row gap-4 mt-10 z-10">
           <Link
-            to="/register"
+            href="/register"
             className="px-8 py-4 rounded-xl font-bold text-lg transition hover:shadow-xl hover:scale-105 transform"
             style={{ backgroundColor: "#c0392b", color: "#fff" }}
           >
             Register Your Shop →
           </Link>
           <Link
-            to="/login"
+            href="/login"
             className="px-8 py-4 rounded-xl font-bold text-lg transition hover:scale-105 transform"
             style={{ backgroundColor: "#fff", color: "#1a1a2e", border: "1px solid #e5e7eb" }}
           >
@@ -147,34 +154,22 @@ const LandingLight = () => {
           <div className="text-center p-8 rounded-2xl relative" style={{ backgroundColor: "#fff", border: "1px solid #e5e7eb" }}>
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style={{ backgroundColor: "#c0392b", color: "#fff" }}>1</div>
             <div className="text-5xl mb-5 mt-2">📱</div>
-            <h4 className="text-lg font-semibold mb-3" style={{ color: "#1a1a2e" }}>
-              Customer Scans QR
-            </h4>
-            <p className="text-sm" style={{ color: "#6b7280" }}>
-              Stick QR on your counter. Customer scans with phone — no app download needed.
-            </p>
+            <h4 className="text-lg font-semibold mb-3" style={{ color: "#1a1a2e" }}>Customer Scans QR</h4>
+            <p className="text-sm" style={{ color: "#6b7280" }}>Stick QR on your counter. Customer scans with phone — no app download needed.</p>
           </div>
 
           <div className="text-center p-8 rounded-2xl relative" style={{ backgroundColor: "#fff", border: "1px solid #e5e7eb" }}>
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style={{ backgroundColor: "#c0392b", color: "#fff" }}>2</div>
             <div className="text-5xl mb-5 mt-2">📄</div>
-            <h4 className="text-lg font-semibold mb-3" style={{ color: "#1a1a2e" }}>
-              Upload Files
-            </h4>
-            <p className="text-sm" style={{ color: "#6b7280" }}>
-              PDF, Word, Images, PPT — customer selects copies, color, size and uploads.
-            </p>
+            <h4 className="text-lg font-semibold mb-3" style={{ color: "#1a1a2e" }}>Upload Files</h4>
+            <p className="text-sm" style={{ color: "#6b7280" }}>PDF, Word, Images, PPT — customer selects copies, color, size and uploads.</p>
           </div>
 
           <div className="text-center p-8 rounded-2xl relative" style={{ backgroundColor: "#fff", border: "1px solid #e5e7eb" }}>
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style={{ backgroundColor: "#c0392b", color: "#fff" }}>3</div>
             <div className="text-5xl mb-5 mt-2">🖨️</div>
-            <h4 className="text-lg font-semibold mb-3" style={{ color: "#1a1a2e" }}>
-              You Print
-            </h4>
-            <p className="text-sm" style={{ color: "#6b7280" }}>
-              Get instant notification. Download files, set price, and print!
-            </p>
+            <h4 className="text-lg font-semibold mb-3" style={{ color: "#1a1a2e" }}>You Print</h4>
+            <p className="text-sm" style={{ color: "#6b7280" }}>Get instant notification. Download files, set price, and print!</p>
           </div>
         </div>
       </section>
@@ -188,9 +183,7 @@ const LandingLight = () => {
 
         <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           <div className="flex items-start gap-4 p-6 rounded-xl" style={{ backgroundColor: "#f8f9fa", border: "1px solid #e5e7eb" }}>
-            <div className="w-12 h-12 rounded-lg flex items-center justify-center text-xl" style={{ backgroundColor: "#fdecea" }}>
-              ⚡
-            </div>
+            <div className="w-12 h-12 rounded-lg flex items-center justify-center text-xl" style={{ backgroundColor: "#fdecea" }}>⚡</div>
             <div>
               <h4 className="font-semibold text-lg" style={{ color: "#1a1a2e" }}>Instant Jobs</h4>
               <p className="text-sm mt-1" style={{ color: "#6b7280" }}>Real-time notifications when customer uploads files</p>
@@ -198,9 +191,7 @@ const LandingLight = () => {
           </div>
 
           <div className="flex items-start gap-4 p-6 rounded-xl" style={{ backgroundColor: "#f8f9fa", border: "1px solid #e5e7eb" }}>
-            <div className="w-12 h-12 rounded-lg flex items-center justify-center text-xl" style={{ backgroundColor: "#fdecea" }}>
-              🔒
-            </div>
+            <div className="w-12 h-12 rounded-lg flex items-center justify-center text-xl" style={{ backgroundColor: "#fdecea" }}>🔒</div>
             <div>
               <h4 className="font-semibold text-lg" style={{ color: "#1a1a2e" }}>Auto Cleanup</h4>
               <p className="text-sm mt-1" style={{ color: "#6b7280" }}>Files auto-delete after completion — privacy first</p>
@@ -208,9 +199,7 @@ const LandingLight = () => {
           </div>
 
           <div className="flex items-start gap-4 p-6 rounded-xl" style={{ backgroundColor: "#f8f9fa", border: "1px solid #e5e7eb" }}>
-            <div className="w-12 h-12 rounded-lg flex items-center justify-center text-xl" style={{ backgroundColor: "#fef3e2" }}>
-              💰
-            </div>
+            <div className="w-12 h-12 rounded-lg flex items-center justify-center text-xl" style={{ backgroundColor: "#fef3e2" }}>💰</div>
             <div>
               <h4 className="font-semibold text-lg" style={{ color: "#1a1a2e" }}>Set Your Price</h4>
               <p className="text-sm mt-1" style={{ color: "#6b7280" }}>You decide the price for each job — full control</p>
@@ -218,9 +207,7 @@ const LandingLight = () => {
           </div>
 
           <div className="flex items-start gap-4 p-6 rounded-xl" style={{ backgroundColor: "#f8f9fa", border: "1px solid #e5e7eb" }}>
-            <div className="w-12 h-12 rounded-lg flex items-center justify-center text-xl" style={{ backgroundColor: "#fdecea" }}>
-              📊
-            </div>
+            <div className="w-12 h-12 rounded-lg flex items-center justify-center text-xl" style={{ backgroundColor: "#fdecea" }}>📊</div>
             <div>
               <h4 className="font-semibold text-lg" style={{ color: "#1a1a2e" }}>Track Everything</h4>
               <p className="text-sm mt-1" style={{ color: "#6b7280" }}>Dashboard shows all jobs — pending, printing, ready, done</p>
@@ -238,7 +225,7 @@ const LandingLight = () => {
           Join hundreds of print shops already using PagePrint
         </p>
         <Link
-          to="/register"
+          href="/register"
           className="px-10 py-4 rounded-xl font-bold text-lg transition hover:shadow-xl hover:scale-105 transform inline-block"
           style={{ backgroundColor: "#c0392b", color: "#fff" }}
         >
@@ -254,10 +241,7 @@ const LandingLight = () => {
         <p className="text-sm mt-3 text-right" style={{ color: "rgba(255,255,255,0.5)" }}>
           Created by <span className="font-medium" style={{ color: "#a4b4a0ff" }}>Anuj Singhal❤️</span>
         </p>
-        
       </footer>
     </div>
   )
 }
-
-export default LandingLight

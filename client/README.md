@@ -1,16 +1,81 @@
-# React + Vite
+# PagePrint - Next.js Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the Next.js version of the PagePrint frontend (converted from Vite + React).
 
-Currently, two official plugins are available:
+## Getting Started
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+# Install dependencies
+npm install
 
-## React Compiler
+# Create .env.local file with your backend URL
+# NEXT_PUBLIC_BACKEND_URL=http://localhost:4000
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+# Run development server
+npm run dev
 
-## Expanding the ESLint configuration
+# Build for production
+npm run build
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# Start production server
+npm start
+```
+
+## Project Structure
+
+```
+client-next/
+├── app/
+│   ├── layout.jsx          # Root layout (Toaster, metadata)
+│   ├── globals.css         # Global styles (Tailwind)
+│   ├── page.jsx            # Landing page (/)
+│   ├── login/page.jsx      # Login page
+│   ├── register/page.jsx   # Register page
+│   ├── forgot-password/page.jsx
+│   ├── dashboard/page.jsx  # Shopkeeper dashboard (protected)
+│   ├── my-qr/page.jsx      # QR code page (protected)
+│   ├── shop/[shopSlug]/page.jsx   # Customer upload page
+│   └── status/[jobId]/page.jsx    # Job tracking page
+├── components/
+│   └── TaglineTyper.jsx    # Typewriter component
+├── services/
+│   └── api.js              # Axios instance
+├── public/
+│   └── favicon.svg
+├── next.config.js
+├── tailwind.config.js
+├── postcss.config.js
+└── package.json
+```
+
+## Route Mapping (Vite → Next.js)
+
+| Old Route (React Router) | New Route (Next.js App Router) |
+|--------------------------|-------------------------------|
+| `/`                      | `app/page.jsx`                |
+| `/login`                 | `app/login/page.jsx`          |
+| `/register`              | `app/register/page.jsx`       |
+| `/forgot-password`       | `app/forgot-password/page.jsx`|
+| `/dashboard`             | `app/dashboard/page.jsx`      |
+| `/my-qr`                 | `app/my-qr/page.jsx`          |
+| `/shop/:shopSlug`        | `app/shop/[shopSlug]/page.jsx`|
+| `/status/:jobId`         | `app/status/[jobId]/page.jsx` |
+
+## Key Changes from Vite Version
+
+- `react-router-dom` → Next.js file-based routing + `next/navigation`
+- `useNavigate()` → `useRouter()` from `next/navigation`
+- `useParams()` → `useParams()` from `next/navigation`
+- `<Link to="">` → `<Link href="">` from `next/link`
+- `import.meta.env.VITE_*` → `process.env.NEXT_PUBLIC_*`
+- All pages use `"use client"` directive (client-side interactivity)
+- Tailwind CSS v3 with PostCSS (instead of Tailwind v4 Vite plugin)
+
+## Deployment
+
+Deploy to Vercel:
+```bash
+npx vercel
+```
+
+No `vercel.json` needed — Next.js handles routing natively.

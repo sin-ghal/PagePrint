@@ -1,11 +1,14 @@
-import { useState } from "react"
-import { useNavigate, Link } from "react-router-dom"
-import toast from "react-hot-toast"
-import API from "../services/api"
+"use client"
 
-const ForgotPassword = () => {
-  const navigate = useNavigate()
-  const [step, setStep] = useState(1) // 1=email, 2=otp+newpass
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+import toast from "react-hot-toast"
+import API from "../../services/api"
+
+export default function ForgotPasswordPage() {
+  const router = useRouter()
+  const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState("")
   const [otp, setOtp] = useState("")
@@ -36,7 +39,7 @@ const ForgotPassword = () => {
       const res = await API.post("/auth/reset-password", { email, otp, newPassword })
       if (res.data.success) {
         toast.success("Password reset! Please login.")
-        navigate("/login")
+        router.push("/login")
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Reset failed")
@@ -53,7 +56,7 @@ const ForgotPassword = () => {
         </div>
 
         <div className="p-8 rounded-2xl" style={{ backgroundColor: "#fff", border: "1px solid #e5e7eb" }}>
-          <a href="/login" className="text-sm mb-4 inline-block transition hover:underline" style={{ color: "#c0392b" }}>← Back to Login</a>
+          <Link href="/login" className="text-sm mb-4 inline-block transition hover:underline" style={{ color: "#c0392b" }}>← Back to Login</Link>
           
           <h2 className="text-xl font-bold mb-1" style={{ color: "#1a1a2e" }}>
             {step === 1 ? "Forgot Password?" : "Reset Password"}
@@ -139,11 +142,9 @@ const ForgotPassword = () => {
 
         <p className="text-center text-sm mt-5" style={{ color: "#6b7280" }}>
           Remember your password?{" "}
-          <Link to="/login" style={{ color: "#c0392b", fontWeight: 600 }}>Login</Link>
+          <Link href="/login" style={{ color: "#c0392b", fontWeight: 600 }}>Login</Link>
         </p>
       </div>
     </div>
   )
 }
-
-export default ForgotPassword

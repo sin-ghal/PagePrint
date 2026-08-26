@@ -1,11 +1,14 @@
+"use client"
+
 import { useState } from "react"
-import { useNavigate, Link } from "react-router-dom"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
 import toast from "react-hot-toast"
 import Typewriter from "typewriter-effect"
-import API from "../services/api"
+import API from "../../services/api"
 
-const Register = () => {
-  const navigate = useNavigate()
+export default function RegisterPage() {
+  const router = useRouter()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [locationLoading, setLocationLoading] = useState(false)
@@ -93,7 +96,7 @@ const Register = () => {
       const res = await API.post("/auth/signup", { ...formData, otp })
       if (res.data.success) {
         toast.success("Registered successfully!")
-        navigate("/login")
+        router.push("/login")
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Signup failed")
@@ -120,10 +123,7 @@ const Register = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full" style={{ border: "1px solid rgba(192,57,43,0.06)" }}></div>
         {/* Logo */}
         <div className="mb-8 flex flex-col items-center z-10">
-          <div
-            className="w-20 h-20 rounded-2xl flex items-center justify-center mb-4 shadow-md"
-            style={{ backgroundColor: "#e8f4f8" }}
-          >
+          <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-4 shadow-md" style={{ backgroundColor: "#e8f4f8" }}>
             <span className="text-4xl">🖨️</span>
           </div>
           <h1 className="text-3xl font-bold" style={{ color: "#1a1a2e" }}>Page<span style={{ color: "#c0392b" }}>Print</span></h1>
@@ -193,7 +193,7 @@ const Register = () => {
           </div>
 
           <div>
-            <a href="/" className="text-sm mb-4 inline-block transition hover:underline hover:scale-105" style={{ color: "#c0392b" }}>← Home</a>
+            <Link href="/" className="text-sm mb-4 inline-block transition hover:underline hover:scale-105" style={{ color: "#c0392b" }}>← Home</Link>
             <h2 className="text-2xl font-bold mb-1" style={{ color: "#1a1a2e" }}>
               {step === 1 ? "Create your account" : "Verify Email"}
             </h2>
@@ -422,14 +422,10 @@ const Register = () => {
 
           <p className="text-center text-sm mt-6" style={{ color: "#6b7280" }}>
             Already have an account?{" "}
-            <Link to="/login" style={{ color: "#c0392b", fontWeight: 600 }}>
-              Sign in
-            </Link>
+            <Link href="/login" style={{ color: "#c0392b", fontWeight: 600 }}>Sign in</Link>
           </p>
         </div>
       </div>
     </div>
   )
 }
-
-export default Register

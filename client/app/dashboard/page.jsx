@@ -1,40 +1,52 @@
-import { useState, useEffect } from "react"
-import { useNavigate, Link } from "react-router-dom"
-import toast from "react-hot-toast"
-import { io } from "socket.io-client" //socket
-import API from "../services/api"
+"use client"
 
-const Dashboard = () => {
-  const navigate = useNavigate()
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+import toast from "react-hot-toast"
+import { io } from "socket.io-client"
+import API from "../../services/api"
+
+export default function DashboardPage() {
+  const router = useRouter()
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState("all")
   const [priceInputs, setPriceInputs] = useState({})
   const [qrCode, setQrCode] = useState("")
-  const [downloaded, setDownloaded] = useState({})
-
-  const user = JSON.parse(localStorage.getItem("user") || "{}")
-  const token = localStorage.getItem("token")
+  const [user, setUser] = useState({})
+  const [token, setToken] = useState("")
 
   useEffect(() => {
-    if (!token) {
-      navigate("/login")
+    const storedToken = localStorage.getItem("token")
+    const storedUser = JSON.parse(localStorage.getItem("user") || "{}")
+    
+    if (!storedToken) {
+      router.push("/login")
       return
     }
+    
+    setToken(storedToken)
+    setUser(storedUser)
+  }, [router])
+
+  useEffect(() => {
+    if (!token) return
+
     fetchJobs()
     fetchQR()
 
     // Socket connection
-    const socket = io(import.meta.env.VITE_BACKEND_URL || "http://localhost:4000") //socket
-    socket.emit("join-shop", user._id) //socket - join room
+    const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000")
+    socket.emit("join-shop", user._id)
 
-    socket.on("new-job", (data) => { //socket - listen new job
+    socket.on("new-job", (data) => {
       toast.success(`🖨️ New job received! ${data.files} file(s)`)
       fetchJobs()
     })
 
-    return () => socket.disconnect() //socket - cleanup
-  }, [])
+    return () => socket.disconnect()
+  }, [token])
 
   const fetchQR = async () => {
     try {
@@ -109,7 +121,7 @@ const Dashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem("token")
     localStorage.removeItem("user")
-    navigate("/login")
+    router.push("/login")
   }
 
   const filteredJobs = filter === "all" ? jobs : jobs.filter(j => j.status === filter)
@@ -144,7 +156,7 @@ const Dashboard = () => {
           <h1 className="text-xl font-bold" style={{ color: "#1a1a2e" }}>Page<span style={{ color: "#c0392b" }}>Print</span></h1>
         </div>
         <div className="flex items-center gap-4">
-          <Link to="/my-qr" className="px-4 py-2 rounded-lg text-sm font-medium transition hover:shadow-lg hover:scale-105 active:scale-95" style={{ backgroundColor: "#fdecea", color: "#c0392b" }}>
+          <Link href="/my-qr" className="px-4 py-2 rounded-lg text-sm font-medium transition hover:shadow-lg hover:scale-105 active:scale-95" style={{ backgroundColor: "#fdecea", color: "#c0392b" }}>
             Download QR
           </Link>
           <button
@@ -202,7 +214,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Filter Tabs + Refresh */}
+        {/* Filter Tabs */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-3">
           <div className="flex gap-2 flex-wrap">
             {["all", "pending", "ready", "completed"].map((tab) => (
@@ -220,7 +232,6 @@ const Dashboard = () => {
               </button>
             ))}
           </div>
-        
         </div>
 
         {/* Jobs */}
@@ -240,7 +251,7 @@ const Dashboard = () => {
               <div key={job._id} className="p-6 rounded-xl" style={{ background: "linear-gradient(135deg, #fff 0%, #fef9f8 100%)", border: "1.5px solid #c0392b" }}>
                 {/* Header */}
                 <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
                     <h3 className="font-bold" style={{ color: "#1a1a2e" }}>📋 {job.jobId}</h3>
                     <span
                       className="px-3 py-1 rounded-full text-xs font-medium"
@@ -252,26 +263,17 @@ const Dashboard = () => {
                       {statusColors[job.status]?.label}
                     </span>
                     {job.isPaid && (
-                      <span
-                        className="px-3 py-1 rounded-full text-xs font-medium"
-                        style={{ backgroundColor: "#d1fae5", color: "#10b981" }}
-                      >
+                      <span className="px-3 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: "#d1fae5", color: "#10b981" }}>
                         💰 Paid — ₹{job.price}
                       </span>
                     )}
                     {job.price > 0 && !job.isPaid && (
-                      <span
-                        className="px-3 py-1 rounded-full text-xs font-medium"
-                        style={{ backgroundColor: "#ef4444", color: "#fff", animation: "shake 0.5s infinite", boxShadow: "0 0 8px rgba(239,68,68,0.5)" }}
-                      >
+                      <span className="px-3 py-1 rounded-full text-xs font-medium animate-shake" style={{ backgroundColor: "#ef4444", color: "#fff", boxShadow: "0 0 8px rgba(239,68,68,0.5)" }}>
                         ⚠️ ₹{job.price} — Unpaid
                       </span>
                     )}
                     {job.price === 0 && (
-                      <span
-                        className="px-3 py-1 rounded-full text-xs font-medium"
-                        style={{ backgroundColor: "#fee2e2", color: "#ef4444" }}
-                      >
+                      <span className="px-3 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: "#fee2e2", color: "#ef4444" }}>
                         💰 Price not set
                       </span>
                     )}
@@ -279,7 +281,7 @@ const Dashboard = () => {
                   <span className="text-xs" style={{ color: "#9ca3af" }}>{timeAgo(job.createdAt)}</span>
                 </div>
 
-                {/* Files - each file as separate card */}
+                {/* Files */}
                 <div className="mb-4">
                   <div className="space-y-3">
                     {job.files.map((file, i) => (
@@ -300,7 +302,7 @@ const Dashboard = () => {
                               href={file.url}
                               target="_blank"
                               rel="noreferrer"
-                              className="download-btn px-4 py-2 rounded-lg text-sm font-medium ml-4 transition hover:shadow-lg hover:scale-105 active:scale-95"
+                              className="px-4 py-2 rounded-lg text-sm font-medium ml-4 transition hover:shadow-lg hover:scale-105 active:scale-95"
                               style={{ backgroundColor: "#d25042ff", color: "#fff", textDecoration: "none" }}
                               onClick={(e) => { e.currentTarget.style.backgroundColor = "#10b981"; e.currentTarget.textContent = "✅ Opened" }}
                             >
@@ -319,7 +321,6 @@ const Dashboard = () => {
 
                 {/* Actions */}
                 <div className="flex flex-wrap items-center gap-3 pt-3" style={{ borderTop: "1px solid #f3f4f6" }}>
-                  {/* Set Price / Update Price */}
                   {(job.price === 0 || !job.isPaid) && (
                     <div className="flex items-center gap-2">
                       <input
@@ -340,7 +341,6 @@ const Dashboard = () => {
                     </div>
                   )}
 
-                  {/* Mark Paid */}
                   {!job.isPaid && job.price > 0 && (
                     <button
                       onClick={() => markPaid(job.jobId)}
@@ -353,7 +353,6 @@ const Dashboard = () => {
                     </button>
                   )}
 
-                  {/* Status Update */}
                   {job.status !== "completed" && job.status !== "cancelled" && (
                     <select
                       value={job.status}
@@ -371,7 +370,7 @@ const Dashboard = () => {
                 {/* Remarks */}
                 {job.remarks && (
                   <p className="text-sm mt-3 pt-3" style={{ color: "#6b7280", borderTop: "1px solid #f3f4f6" }}>
-                    💬 "{job.remarks}"
+                    💬 &ldquo;{job.remarks}&rdquo;
                   </p>
                 )}
               </div>
@@ -382,5 +381,3 @@ const Dashboard = () => {
     </div>
   )
 }
-
-export default Dashboard

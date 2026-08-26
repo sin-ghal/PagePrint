@@ -1,24 +1,31 @@
-import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import toast from "react-hot-toast"
-import API from "../services/api"
+"use client"
 
-const MyQR = () => {
-  const navigate = useNavigate()
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import toast from "react-hot-toast"
+import API from "../../services/api"
+
+export default function MyQRPage() {
+  const router = useRouter()
   const [qrCode, setQrCode] = useState("")
   const [shopName, setShopName] = useState("")
   const [shopSlug, setShopSlug] = useState("")
   const [loading, setLoading] = useState(true)
-
-  const token = localStorage.getItem("token")
+  const [token, setToken] = useState("")
 
   useEffect(() => {
-    if (!token) {
-      navigate("/login")
+    const storedToken = localStorage.getItem("token")
+    if (!storedToken) {
+      router.push("/login")
       return
     }
+    setToken(storedToken)
+  }, [router])
+
+  useEffect(() => {
+    if (!token) return
     fetchQR()
-  }, [])
+  }, [token])
 
   const fetchQR = async () => {
     try {
@@ -106,7 +113,7 @@ const MyQR = () => {
           <h1 className="text-xl font-bold" style={{ color: "#1a1a2e" }}>Page<span style={{ color: "#c0392b" }}>Print</span></h1>
         </div>
         <button
-          onClick={() => navigate("/dashboard")}
+          onClick={() => router.push("/dashboard")}
           className="px-4 py-2 rounded-lg text-sm font-medium cursor-pointer"
           style={{ color: "#c0392b", border: "1px solid rgba(192,57,43,0.2)" }}
         >
@@ -168,5 +175,3 @@ const MyQR = () => {
     </div>
   )
 }
-
-export default MyQR
