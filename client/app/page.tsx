@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import TaglineTyper from "../components/TaglineTyper"
 
 export default function LandingPage() {
-  const [token, setToken] = useState(null)
+  const [token, setToken] = useState<string | null>(null)
 
   useEffect(() => {
     setToken(localStorage.getItem("token"))
@@ -51,7 +51,6 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <section className="relative flex flex-col items-center justify-center text-center px-6 pt-12 pb-20 overflow-hidden">
-        {/* Decorative elements */}
         <div className="absolute top-10 left-10 w-64 h-64 rounded-full" style={{ background: "radial-gradient(circle, rgba(192,57,43,0.06) 0%, transparent 70%)" }}></div>
         <div className="absolute bottom-10 right-10 w-80 h-80 rounded-full" style={{ background: "radial-gradient(circle, rgba(192,57,43,0.05) 0%, transparent 70%)" }}></div>
         <div className="absolute top-20 right-20 w-3 h-3 rounded-full" style={{ backgroundColor: "rgba(192,57,43,0.3)" }}></div>
@@ -102,24 +101,15 @@ export default function LandingPage() {
           Customers scan, upload files, and you print. No WhatsApp, no USB, no hassle. Get notification on your dashboard instantly.
         </p>
 
-        {/* Typewriter */}
         <div className="mt-8 z-10">
           <TaglineTyper />
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 mt-10 z-10">
-          <Link
-            href="/register"
-            className="px-8 py-4 rounded-xl font-bold text-lg transition hover:shadow-xl hover:scale-105 transform"
-            style={{ backgroundColor: "#c0392b", color: "#fff" }}
-          >
+          <Link href="/register" className="px-8 py-4 rounded-xl font-bold text-lg transition hover:shadow-xl hover:scale-105 transform" style={{ backgroundColor: "#c0392b", color: "#fff" }}>
             Register Your Shop →
           </Link>
-          <Link
-            href="/login"
-            className="px-8 py-4 rounded-xl font-bold text-lg transition hover:scale-105 transform"
-            style={{ backgroundColor: "#fff", color: "#1a1a2e", border: "1px solid #e5e7eb" }}
-          >
+          <Link href="/login" className="px-8 py-4 rounded-xl font-bold text-lg transition hover:scale-105 transform" style={{ backgroundColor: "#fff", color: "#1a1a2e", border: "1px solid #e5e7eb" }}>
             I have an account
           </Link>
         </div>
@@ -145,11 +135,8 @@ export default function LandingPage() {
 
       {/* How it works */}
       <section className="py-20 px-6">
-        <h3 className="text-3xl md:text-4xl font-bold text-center mb-4" style={{ color: "#1a1a2e" }}>
-          How It Works
-        </h3>
+        <h3 className="text-3xl md:text-4xl font-bold text-center mb-4" style={{ color: "#1a1a2e" }}>How It Works</h3>
         <p className="text-center mb-14" style={{ color: "#6b7280" }}>Three simple steps to modernize your print shop</p>
-
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           <div className="text-center p-8 rounded-2xl relative" style={{ backgroundColor: "#fff", border: "1px solid #e5e7eb" }}>
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style={{ backgroundColor: "#c0392b", color: "#fff" }}>1</div>
@@ -157,14 +144,12 @@ export default function LandingPage() {
             <h4 className="text-lg font-semibold mb-3" style={{ color: "#1a1a2e" }}>Customer Scans QR</h4>
             <p className="text-sm" style={{ color: "#6b7280" }}>Stick QR on your counter. Customer scans with phone — no app download needed.</p>
           </div>
-
           <div className="text-center p-8 rounded-2xl relative" style={{ backgroundColor: "#fff", border: "1px solid #e5e7eb" }}>
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style={{ backgroundColor: "#c0392b", color: "#fff" }}>2</div>
             <div className="text-5xl mb-5 mt-2">📄</div>
             <h4 className="text-lg font-semibold mb-3" style={{ color: "#1a1a2e" }}>Upload Files</h4>
             <p className="text-sm" style={{ color: "#6b7280" }}>PDF, Word, Images, PPT — customer selects copies, color, size and uploads.</p>
           </div>
-
           <div className="text-center p-8 rounded-2xl relative" style={{ backgroundColor: "#fff", border: "1px solid #e5e7eb" }}>
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style={{ backgroundColor: "#c0392b", color: "#fff" }}>3</div>
             <div className="text-5xl mb-5 mt-2">🖨️</div>
@@ -176,11 +161,8 @@ export default function LandingPage() {
 
       {/* Features */}
       <section className="py-20 px-6" style={{ backgroundColor: "#fff" }}>
-        <h3 className="text-3xl md:text-4xl font-bold text-center mb-4" style={{ color: "#1a1a2e" }}>
-          Why Shopkeepers Love It
-        </h3>
+        <h3 className="text-3xl md:text-4xl font-bold text-center mb-4" style={{ color: "#1a1a2e" }}>Why Shopkeepers Love It</h3>
         <p className="text-center mb-14" style={{ color: "#6b7280" }}>Built for real print shops, not tech companies</p>
-
         <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           <div className="flex items-start gap-4 p-6 rounded-xl" style={{ backgroundColor: "#f8f9fa", border: "1px solid #e5e7eb" }}>
             <div className="w-12 h-12 rounded-lg flex items-center justify-center text-xl" style={{ backgroundColor: "#fdecea" }}>⚡</div>
@@ -189,7 +171,6 @@ export default function LandingPage() {
               <p className="text-sm mt-1" style={{ color: "#6b7280" }}>Real-time notifications when customer uploads files</p>
             </div>
           </div>
-
           <div className="flex items-start gap-4 p-6 rounded-xl" style={{ backgroundColor: "#f8f9fa", border: "1px solid #e5e7eb" }}>
             <div className="w-12 h-12 rounded-lg flex items-center justify-center text-xl" style={{ backgroundColor: "#fdecea" }}>🔒</div>
             <div>
@@ -197,7 +178,6 @@ export default function LandingPage() {
               <p className="text-sm mt-1" style={{ color: "#6b7280" }}>Files auto-delete after completion — privacy first</p>
             </div>
           </div>
-
           <div className="flex items-start gap-4 p-6 rounded-xl" style={{ backgroundColor: "#f8f9fa", border: "1px solid #e5e7eb" }}>
             <div className="w-12 h-12 rounded-lg flex items-center justify-center text-xl" style={{ backgroundColor: "#fef3e2" }}>💰</div>
             <div>
@@ -205,7 +185,6 @@ export default function LandingPage() {
               <p className="text-sm mt-1" style={{ color: "#6b7280" }}>You decide the price for each job — full control</p>
             </div>
           </div>
-
           <div className="flex items-start gap-4 p-6 rounded-xl" style={{ backgroundColor: "#f8f9fa", border: "1px solid #e5e7eb" }}>
             <div className="w-12 h-12 rounded-lg flex items-center justify-center text-xl" style={{ backgroundColor: "#fdecea" }}>📊</div>
             <div>
@@ -218,17 +197,9 @@ export default function LandingPage() {
 
       {/* CTA */}
       <section className="py-20 px-6 text-center" style={{ backgroundColor: "#fdecea" }}>
-        <h3 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: "#1a1a2e" }}>
-          Ready to modernize your shop?
-        </h3>
-        <p className="mb-8 text-lg" style={{ color: "#6b7280" }}>
-          Join hundreds of print shops already using PagePrint
-        </p>
-        <Link
-          href="/register"
-          className="px-10 py-4 rounded-xl font-bold text-lg transition hover:shadow-xl hover:scale-105 transform inline-block"
-          style={{ backgroundColor: "#c0392b", color: "#fff" }}
-        >
+        <h3 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: "#1a1a2e" }}>Ready to modernize your shop?</h3>
+        <p className="mb-8 text-lg" style={{ color: "#6b7280" }}>Join hundreds of print shops already using PagePrint</p>
+        <Link href="/register" className="px-10 py-4 rounded-xl font-bold text-lg transition hover:shadow-xl hover:scale-105 transform inline-block" style={{ backgroundColor: "#c0392b", color: "#fff" }}>
           Get Started Free →
         </Link>
       </section>
