@@ -1,14 +1,14 @@
-const QRCode = require("qrcode")
+import QRCode from "qrcode"
+import dotenv from "dotenv"
 
-require("dotenv").config()
+dotenv.config()
 
-exports.generateQR = async (shopSlug) => {
+export const generateQR = async (shopSlug: string): Promise<string> => {
   try {
     const url = `${process.env.FRONTEND_URL}/shop/${shopSlug}`
     const qrDataUrl = await QRCode.toDataURL(url)
     return qrDataUrl
-
-  } catch (error) {
+  } catch (error: any) {
     console.error("QR generation error:", error.message)
     throw error
   }

@@ -1,10 +1,14 @@
-const https = require("https")
+import https from "https"
 
-exports.mailSender = async (email, title, body) => {
+export const mailSender = async (
+  email: string,
+  title: string,
+  body: string
+): Promise<any> => {
   try {
     const data = JSON.stringify({
       sender: { name: "PagePrint", email: "saswm1427@gmail.com" },
-      to: [{ email: email }],
+      to: [{ email }],
       subject: title,
       htmlContent: body,
     })
@@ -17,14 +21,14 @@ exports.mailSender = async (email, title, body) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "api-key": process.env.BREVO_API_KEY,
+            "api-key": process.env.BREVO_API_KEY as string,
           },
         },
         (res) => {
           let responseData = ""
           res.on("data", (chunk) => (responseData += chunk))
           res.on("end", () => {
-            if (res.statusCode >= 200 && res.statusCode < 300) {
+            if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
               resolve(JSON.parse(responseData))
             } else {
               reject(new Error(`Brevo API error: ${res.statusCode} - ${responseData}`))
@@ -39,7 +43,7 @@ exports.mailSender = async (email, title, body) => {
 
     console.log("Email sent:", result)
     return result
-  } catch (e) {
+  } catch (e: any) {
     console.log("MAIL SEND ERROR:", e.message)
     throw e
   }

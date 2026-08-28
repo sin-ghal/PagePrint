@@ -1,12 +1,12 @@
-const multer = require("multer")
-const { CloudinaryStorage } = require("multer-storage-cloudinary")
-const cloudinary = require("cloudinary").v2 
+import multer from "multer"
+import { CloudinaryStorage } from "multer-storage-cloudinary"
+import { v2 as cloudinary } from "cloudinary"
 
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "printshop-files",
-    allowed_formats: [  
+    allowed_formats: [
       "pdf",
       "doc",
       "docx",
@@ -18,13 +18,13 @@ const storage = new CloudinaryStorage({
       "jpg",
       "jpeg",
       "txt",
-      "csv",],
+      "csv",
+    ],
     resource_type: "auto",
-  },
+  } as any,
 })
 
-exports.upload = multer({
+export const upload = multer({
   storage,
   limits: { fileSize: 10 * 1024 * 1024 },
 })
-

@@ -1,14 +1,38 @@
-const mongoose = require("mongoose");
+import mongoose, { Document, Schema, Types } from "mongoose"
 
-const totalJobsSchema = new mongoose.Schema(
+export interface IFile {
+  name: string
+  url: string
+  publicId?: string
+  size?: number
+  copies: number
+  colorMode: "bw" | "color"
+  paperSize: "A4" | "A3" | "Legal"
+  sides: "single" | "duplex"
+  pages: string
+}
+
+export interface ITotalJobs extends Document {
+  jobId: string
+  shopkeeper: Types.ObjectId
+  files: IFile[]
+  remarks?: string
+  price: number
+  isPaid: boolean
+  status: "pending" | "ready" | "completed"
+  createdAt: Date
+  updatedAt: Date
+}
+
+const totalJobsSchema = new Schema<ITotalJobs>(
   {
-     jobId: {
+    jobId: {
       type: String,
       unique: true,
       required: true,
     },
     shopkeeper: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Shopkeeper",
       required: true,
     },
@@ -42,11 +66,10 @@ const totalJobsSchema = new mongoose.Schema(
       enum: ["pending", "ready", "completed"],
       default: "pending",
     },
-
   },
   { timestamps: true }
-);
+)
 
 totalJobsSchema.index({ shopkeeper: 1, createdAt: -1 })
 
-module.exports = mongoose.model("TotalJobs", totalJobsSchema);
+export default mongoose.model<ITotalJobs>("TotalJobs", totalJobsSchema)

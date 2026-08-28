@@ -1,11 +1,11 @@
-const TotalJobs = require("../models/totalJobs")
-const Shopkeeper = require("../models/Shopkeeper")
-const cloudinary = require("cloudinary").v2
-const crypto = require("crypto")
-const { getIO } = require("../config/socket") //socket
+import { Request, Response } from "express"
+import TotalJobs from "../models/totalJobs"
+import Shopkeeper from "../models/Shopkeeper"
+import { v2 as cloudinary } from "cloudinary"
+import crypto from "crypto"
+import { getIO } from "../config/socket"
 
-// Customer creates a print job
-exports.createJob = async (req, res) => {
+export const createJob = async (req: Request, res: Response): Promise<any> => {
   try {
     const { shopSlug } = req.params
     const { remarks } = req.body
@@ -18,37 +18,41 @@ exports.createJob = async (req, res) => {
       })
     }
 
-    if (!req.files || req.files.length === 0) {
+    const uploadedFiles = req.files as Express.Multer.File[]
+    if (!uploadedFiles || uploadedFiles.length === 0) {
       return res.status(400).json({
         success: false,
         message: "Please upload at least one file",
       })
     }
 
-const files = req.files.map((file, index) => ({
-  name: file.originalname,
-  url: file.path,
-  publicId: file.filename,
-  size: file.size,
-  copies: req.body.copies?.[index] || 1,
-  colorMode: req.body.colorMode?.[index] || "bw",
-  paperSize: req.body.paperSize?.[index] || "A4",
-  sides: req.body.sides?.[index] || "single",
-  pages: req.body.pages?.[index] || "all",
-}))
+    const files = uploadedFiles.map((file: any, index: number) => ({
+      name: file.originalname,
+      url: file.path,
+      publicId: file.filename,
+      size: file.size,
+      copies: req.body.copies?.[index] || 1,
+      colorMode: req.body.colorMode?.[index] || "bw",
+      paperSize: req.body.paperSize?.[index] || "A4",
+      sides: req.body.sides?.[index] || "single",
+      pages: req.body.pages?.[index] || "all",
+    }))
 
     const jobId = "JOB-" + crypto.randomUUID().slice(0, 6).toUpperCase()
 
-  const job = await TotalJobs.create({
-  shopkeeper: shopkeeper._id,
-  jobId,
-  files,
-  remarks,
-})
+    const job = await TotalJobs.create({
+      shopkeeper: shopkeeper._id,
+      jobId,
+      files,
+      remarks,
+    })
 
-//socket - emit new job to shopkeeper's room
-const io = getIO() //socket
-io.to(shopkeeper._id.toString()).emit("new-job", { jobId: job.jobId, files: job.files.length }) //socket
+    // Socket - emit new job to shopkeeper's room
+    const io = getIO()
+    io.to(shopkeeper._id.toString()).emit("new-job", {
+      jobId: job.jobId,
+      files: job.files.length,
+    })
 
     // Auto-delete files after 30 minutes
     setTimeout(async () => {
@@ -60,11 +64,14 @@ io.to(shopkeeper._id.toString()).emit("new-job", { jobId: job.jobId, files: job.
               await cloudinary.uploader.destroy("printshop-files/" + file.publicId)
             }
           }
-          const updatedFiles = freshJob.files.map(f => ({ ...f.toObject(), url: "" }))
+          const updatedFiles = freshJob.files.map((f: any) => ({
+            ...f.toObject(),
+            url: "",
+          }))
           await TotalJobs.findOneAndUpdate({ jobId: job.jobId }, { files: updatedFiles })
           console.log(`Auto-deleted files for job ${job.jobId} after 30 min`)
         }
-      } catch (err) {
+      } catch (err: any) {
         console.log("Auto-delete error:", err.message)
       }
     }, 30 * 60 * 1000)
@@ -74,7 +81,7 @@ io.to(shopkeeper._id.toString()).emit("new-job", { jobId: job.jobId, files: job.
       message: "Job created successfully",
       jobId: job.jobId,
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error(error)
     return res.status(500).json({
       success: false,
@@ -83,8 +90,7 @@ io.to(shopkeeper._id.toString()).emit("new-job", { jobId: job.jobId, files: job.
   }
 }
 
-// Customer checks job status
-exports.getJobStatus = async (req, res) => {
+export const getJobStatus = async (req: Request, res: Response): Promise<any> => {
   try {
     const { jobId } = req.params
     const job = await TotalJobs.findOne({ jobId })
@@ -106,7 +112,7 @@ exports.getJobStatus = async (req, res) => {
         createdAt: job.createdAt,
       },
     })
-  } catch (error) {
+  } catch (error: any) {
     return res.status(500).json({
       success: false,
       message: error.message,
@@ -114,8 +120,7 @@ exports.getJobStatus = async (req, res) => {
   }
 }
 
-// Get shop details by slug
-exports.getShopDetails = async (req, res) => {
+export const getShopDetails = async (req: Request, res: Response): Promise<any> => {
   try {
     const { shopSlug } = req.params
     const shop = await Shopkeeper.findOne({ shopSlug })
@@ -138,7 +143,7 @@ exports.getShopDetails = async (req, res) => {
         ownerName: shop.name,
       },
     })
-  } catch (error) {
+  } catch (error: any) {
     return res.status(500).json({
       success: false,
       message: error.message,

@@ -1,12 +1,12 @@
-const TotalJobs = require("../models/totalJobs")
-const cloudinary = require("cloudinary").v2
+import { Response } from "express"
+import TotalJobs from "../models/totalJobs"
+import Shopkeeper from "../models/Shopkeeper"
+import { v2 as cloudinary } from "cloudinary"
+import { AuthRequest } from "../middlewares/auth"
 
-
-//download QR code
-exports.getMyQR = async (req, res) => {
+export const getMyQR = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
-    const Shopkeeper = require("../models/Shopkeeper")
-    const shop = await Shopkeeper.findById(req.user.id)
+    const shop = await Shopkeeper.findById(req.user!.id)
 
     if (!shop) {
       return res.status(404).json({
@@ -21,7 +21,7 @@ exports.getMyQR = async (req, res) => {
       shopSlug: shop.shopSlug,
       shopName: shop.shopName,
     })
-  } catch (error) {
+  } catch (error: any) {
     return res.status(500).json({
       success: false,
       message: error.message,
@@ -29,20 +29,18 @@ exports.getMyQR = async (req, res) => {
   }
 }
 
-
-// Shopkeeper gets all their jobs
-exports.getShopJobs = async (req, res) => {
+export const getShopJobs = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
-    const shopkeeperId = req.user.id
-    // const jobs = await TotalJobs.find({ shopkeeper: shopkeeperId }).sort({ createdAt: -1 })
-    const jobs = await TotalJobs.find({ shopkeeper: shopkeeperId }).sort({ createdAt: -1 }).lean()
-
+    const shopkeeperId = req.user!.id
+    const jobs = await TotalJobs.find({ shopkeeper: shopkeeperId })
+      .sort({ createdAt: -1 })
+      .lean()
 
     return res.status(200).json({
       success: true,
       jobs,
     })
-  } catch (error) {
+  } catch (error: any) {
     return res.status(500).json({
       success: false,
       message: error.message,
@@ -50,12 +48,11 @@ exports.getShopJobs = async (req, res) => {
   }
 }
 
-// Shopkeeper updates job status
-exports.updateJobStatus = async (req, res) => {
+export const updateJobStatus = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const { jobId } = req.params
     const { status } = req.body
-    const shopkeeperId = req.user.id
+    const shopkeeperId = req.user!.id
 
     const job = await TotalJobs.findOneAndUpdate(
       { jobId, shopkeeper: shopkeeperId },
@@ -71,23 +68,23 @@ exports.updateJobStatus = async (req, res) => {
     }
 
     if (status === "completed") {
-  for (const file of job.files) {
-    if (file.publicId) {
-      await cloudinary.uploader.destroy("printshop-files/" + file.publicId)
+      for (const file of job.files) {
+        if (file.publicId) {
+          await cloudinary.uploader.destroy("printshop-files/" + file.publicId)
+        }
+      }
+
+      const updatedFiles = job.files.map((f: any) => ({ ...f.toObject(), url: "" }))
+      await TotalJobs.findOneAndUpdate({ jobId }, { files: updatedFiles })
+      console.log(`Files deleted from cloud for job ${jobId}, metadata preserved`)
     }
-  }
-  
-  const updatedFiles = job.files.map(f => ({ ...f.toObject(), url: "" }))
-  await TotalJobs.findOneAndUpdate({ jobId }, { files: updatedFiles })
-  console.log(`Files deleted from cloud for job ${jobId}, metadata preserved`)
-}
 
     return res.status(200).json({
       success: true,
       message: "Status updated",
       job,
     })
-  } catch (error) {
+  } catch (error: any) {
     return res.status(500).json({
       success: false,
       message: error.message,
@@ -95,12 +92,11 @@ exports.updateJobStatus = async (req, res) => {
   }
 }
 
-// Shopkeeper sets price
-exports.setJobPrice = async (req, res) => {
+export const setJobPrice = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const { jobId } = req.params
     const { price } = req.body
-    const shopkeeperId = req.user.id
+    const shopkeeperId = req.user!.id
 
     const job = await TotalJobs.findOneAndUpdate(
       { jobId, shopkeeper: shopkeeperId },
@@ -120,7 +116,7 @@ exports.setJobPrice = async (req, res) => {
       message: "Price set",
       job,
     })
-  } catch (error) {
+  } catch (error: any) {
     return res.status(500).json({
       success: false,
       message: error.message,
@@ -128,12 +124,10 @@ exports.setJobPrice = async (req, res) => {
   }
 }
 
-//payment status
-// Shopkeeper marks job as paid
-exports.isPaid = async (req, res) => {
+export const isPaid = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const { jobId } = req.params
-    const shopkeeperId = req.user.id
+    const shopkeeperId = req.user!.id
 
     const job = await TotalJobs.findOneAndUpdate(
       { jobId, shopkeeper: shopkeeperId },
@@ -154,7 +148,7 @@ exports.isPaid = async (req, res) => {
         await cloudinary.uploader.destroy("printshop-files/" + file.publicId)
       }
     }
-    const updatedFiles = job.files.map(f => ({ ...f.toObject(), url: "" }))
+    const updatedFiles = job.files.map((f: any) => ({ ...f.toObject(), url: "" }))
     await TotalJobs.findOneAndUpdate({ jobId }, { files: updatedFiles, status: "completed" })
 
     return res.status(200).json({
@@ -162,11 +156,10 @@ exports.isPaid = async (req, res) => {
       message: "Marked as paid, files deleted",
       job,
     })
-  } catch (error) {
+  } catch (error: any) {
     return res.status(500).json({
       success: false,
       message: error.message,
     })
   }
 }
-
