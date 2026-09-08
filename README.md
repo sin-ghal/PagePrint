@@ -109,7 +109,47 @@ Customer scans QR → Opens upload page → Submits print order
 | PUT | `/mark-paid/:id` | Mark as paid |
 | GET | `/my-qr` | Get shop QR code |
 
-## 🚀 Run Locally
+## 🐳 Run with Docker (Recommended)
+
+The entire app is containerized. With Docker installed, one command starts both the frontend and backend.
+
+### Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
+- A `server/.env` file with the required credentials (see `server/.env.example`)
+
+### Steps
+
+```bash
+# Clone
+git clone https://github.com/sin-ghal/PagePrint.git
+cd PagePrint
+
+# Build the images and start all containers
+docker compose up --build
+```
+
+That's it. Once the containers are up:
+
+- Frontend → http://localhost:3000
+- Backend  → http://localhost:4000
+
+### Useful commands
+
+```bash
+docker compose up --build      # build images + start (foreground, shows logs)
+docker compose up -d           # start in the background
+docker compose logs -f         # follow logs
+docker compose down            # stop and remove containers
+```
+
+### How it works
+- `server/Dockerfile` — multi-stage build: compiles TypeScript (`tsc`), then runs `node dist/server.js` on port **4000**
+- `client/Dockerfile` — multi-stage build using Next.js standalone output, served on port **3000**
+- `docker-compose.yml` — wires the two services together on a shared network; the backend connects to **MongoDB Atlas** via `MONGODBURL` in `server/.env`
+
+> **Note:** `NEXT_PUBLIC_BACKEND_URL` is baked into the frontend at build time (passed as a build arg in `docker-compose.yml`), because Next.js public env vars are resolved during the build.
+
+## 🚀 Run Locally (without Docker)
 
 ```bash
 # Clone
