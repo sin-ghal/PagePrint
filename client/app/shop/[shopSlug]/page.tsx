@@ -1,10 +1,5 @@
 import UploadForm from "./UploadForm"
 
-// No "use client" here -> this is a Server Component.
-// The shop data is fetched on the server (SSR), so the page HTML
-// already has the shop name/address when it reaches the browser.
-// Good for SEO and fast first paint since customers open this via QR on mobile.
-
 interface Shop {
   shopName: string
   shopAddress: string

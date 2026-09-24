@@ -69,12 +69,12 @@ export const createJob = async (req: Request, res: Response): Promise<any> => {
             url: "",
           }))
           await TotalJobs.findOneAndUpdate({ jobId: job.jobId }, { files: updatedFiles })
-          console.log(`Auto-deleted files for job ${job.jobId} after 30 min`)
+          console.log(`Auto-deleted files for job ${job.jobId} after 15 min`)
         }
       } catch (err: any) {
         console.log("Auto-delete error:", err.message)
       }
-    }, 30 * 60 * 1000)
+    }, 15 * 60 * 1000)
 
     return res.status(201).json({
       success: true,
