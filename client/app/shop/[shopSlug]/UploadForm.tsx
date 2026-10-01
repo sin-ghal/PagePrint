@@ -19,8 +19,6 @@ interface Shop {
   ownerName?: string
 }
 
-// Client component - handles all the interactivity (file select, options, submit).
-// The shop data is fetched on the server and passed in as a prop.
 export default function UploadForm({ shopSlug, shop }: { shopSlug: string; shop: Shop }) {
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)

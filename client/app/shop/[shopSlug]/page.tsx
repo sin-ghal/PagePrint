@@ -11,7 +11,6 @@ async function getShop(shopSlug: string): Promise<Shop | null> {
   const base = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000"
   try {
     const res = await fetch(`${base}/api/v1/customer/shop/${shopSlug}`, {
-      // fetch on every request -> true SSR (fresh data each time)
       cache: "no-store",
     })
     if (!res.ok) return null
@@ -40,7 +39,6 @@ export default async function ShopPage({ params }: { params: Promise<{ shopSlug:
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f8f9fa" }}>
-      {/* This header is rendered on the server - present in the initial HTML */}
       <div className="text-center py-8 px-6" style={{ backgroundColor: "#fff", borderBottom: "1px solid #e5e7eb" }}>
         <span className="text-3xl">🖨️</span>
         <h1 className="text-2xl font-bold mt-2" style={{ color: "#1a1a2e" }}>{shop.shopName}</h1>
@@ -50,13 +48,11 @@ export default async function ShopPage({ params }: { params: Promise<{ shopSlug:
         <p className="text-sm mt-3 font-medium" style={{ color: "#c0392b" }}>Upload your documents below</p>
       </div>
 
-      {/* Interactive part lives in a client component */}
       <UploadForm shopSlug={shopSlug} shop={shop} />
     </div>
   )
 }
 
-// Optional: set the page title from shop data (server-side, SEO friendly)
 export async function generateMetadata({ params }: { params: Promise<{ shopSlug: string }> }) {
   const { shopSlug } = await params
   const shop = await getShop(shopSlug)

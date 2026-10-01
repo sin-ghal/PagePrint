@@ -28,7 +28,6 @@ export const generateOtp = async (req: Request, res: Response): Promise<any> => 
       })
     }
 
-    // Rate limit: 1 OTP per minute per email
     const recentOtp = await OTP.findOne({ email }).sort({ createdAt: -1 })
     if (recentOtp && Date.now() - recentOtp.createdAt.getTime() < 60 * 1000) {
       return res.status(429).json({
@@ -37,7 +36,6 @@ export const generateOtp = async (req: Request, res: Response): Promise<any> => 
       })
     }
 
-    // Generate OTP
     const otp = otpGenerator.generate(6, {
       upperCaseAlphabets: false,
       lowerCaseAlphabets: false,
@@ -110,7 +108,6 @@ export const signup = async (req: Request, res: Response): Promise<any> => {
       })
     }
 
-    // Verify OTP from MongoDB
     const recentOtp = await OTP.findOne({ email }).sort({ createdAt: -1 })
     if (!recentOtp) {
       return res.status(400).json({
@@ -126,7 +123,6 @@ export const signup = async (req: Request, res: Response): Promise<any> => {
       })
     }
 
-    // Delete OTP after verification
     await OTP.deleteMany({ email })
 
     const hashedPass = await bcrypt.hash(password, 10)
@@ -240,7 +236,6 @@ export const resetPassword = async (req: Request, res: Response): Promise<any> =
       })
     }
 
-    // Verify OTP
     const recentOtp = await OTP.findOne({ email }).sort({ createdAt: -1 })
     if (!recentOtp) {
       return res.status(400).json({
@@ -259,7 +254,6 @@ export const resetPassword = async (req: Request, res: Response): Promise<any> =
     const hashedPassword = await bcrypt.hash(newPassword, 10)
     await User.findByIdAndUpdate(user._id, { password: hashedPassword })
 
-    // Delete OTP
     await OTP.deleteMany({ email })
 
     return res.status(200).json({

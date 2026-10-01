@@ -142,7 +142,6 @@ export const isPaid = async (req: AuthRequest, res: Response): Promise<any> => {
       })
     }
 
-    // Delete files from cloudinary, keep metadata
     for (const file of job.files) {
       if (file.publicId) {
         await cloudinary.uploader.destroy("printshop-files/" + file.publicId)

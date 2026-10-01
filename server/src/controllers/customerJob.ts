@@ -47,14 +47,12 @@ export const createJob = async (req: Request, res: Response): Promise<any> => {
       remarks,
     })
 
-    // Socket - emit new job to shopkeeper's room
     const io = getIO()
     io.to(shopkeeper._id.toString()).emit("new-job", {
       jobId: job.jobId,
       files: job.files.length,
     })
 
-    // Auto-delete files after 30 minutes
     setTimeout(async () => {
       try {
         const freshJob = await TotalJobs.findOne({ jobId: job.jobId })
