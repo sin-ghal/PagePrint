@@ -5,6 +5,7 @@ import express from "express"
 import http from "http"
 import cookieParser from "cookie-parser"
 import cors from "cors"
+import rateLimit from "express-rate-limit"
 
 import { dbconnect } from "./config/database"
 import { cloudinaryConnect } from "./config/cloudinary"
@@ -25,12 +26,32 @@ app.use(
   })
 )
 
+// Auth routes
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: "Too many attempts, please try again after 15 minutes." },
+})
+
+// Customer upload
+const uploadLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 20,
+  message: { error: "Too many upload requests, please slow down." },
+})
+
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { error: "Too many requests, please try again later." },
+})
+
 const server = http.createServer(app)
 initSocket(server)
 
-app.use("/api/v1/auth", authRoutes)
-app.use("/api/v1/customer", customerRoutes)
-app.use("/api/v1/shopkeeper", shopkeeperRoutes)
+app.use("/api/v1/auth", authLimiter, authRoutes)
+app.use("/api/v1/customer", uploadLimiter, customerRoutes)
+app.use("/api/v1/shopkeeper", generalLimiter, shopkeeperRoutes)
 
 dbconnect()
 cloudinaryConnect()

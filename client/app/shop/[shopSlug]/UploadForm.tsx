@@ -29,6 +29,42 @@ export default function UploadForm({ shopSlug, shop }: { shopSlug: string; shop:
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(e.target.files || [])
+
+    if (selected.length > 5) {
+      toast.error("You can select up to 5 files only.")
+      e.target.value = ""
+      return
+    }
+
+    const allowedTypes = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.ms-excel",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/vnd.ms-powerpoint",
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      "image/png",
+      "image/jpg",
+      "image/jpeg",
+      "text/plain",
+      "text/csv",
+    ]
+
+    const invalidFiles = selected.filter((f) => !allowedTypes.includes(f.type))
+    if (invalidFiles.length > 0) {
+      toast.error(`Invalid file type: ${invalidFiles.map((f) => f.name).join(", ")}. Videos and other media are not allowed.`)
+      e.target.value = ""
+      return
+    }
+
+    const oversized = selected.filter((f) => f.size > 10 * 1024 * 1024)
+    if (oversized.length > 0) {
+      toast.error(`These files exceed 10MB limit: ${oversized.map((f) => f.name).join(", ")}`)
+      e.target.value = ""
+      return
+    }
+
     setFiles(selected)
     setFileOptions(selected.map(() => ({ copies: 1, colorMode: "bw", paperSize: "A4", sides: "single", pages: "all" })))
   }
