@@ -180,7 +180,21 @@ export default function DashboardPage() {
                             </div>
                           </div>
                           {file.url ? (
-                            <a href={file.url} target="_blank" rel="noreferrer" download className="px-4 py-2 rounded-lg text-sm font-medium ml-4 transition hover:shadow-lg hover:scale-105 active:scale-95" style={{ backgroundColor: "#d25042ff", color: "#fff", textDecoration: "none" }}>📥 Download</a>
+                            <a
+                              href={
+                                // PDFs → Google Docs viewer (opens in browser without download)
+                                // Images → direct Cloudinary URL
+                                // Office/other → direct download
+                                file.name?.match(/\.pdf$/i)
+                                  ? `https://docs.google.com/viewer?url=${encodeURIComponent(file.url)}`
+                                  : file.url
+                              }
+                              target="_blank"
+                              rel="noreferrer"
+                              download={file.name?.match(/\.(pdf|png|jpe?g)$/i) ? undefined : true}
+                              className="px-4 py-2 rounded-lg text-sm font-medium ml-4 transition hover:shadow-lg hover:scale-105 active:scale-95"
+                              style={{ backgroundColor: "#d25042ff", color: "#fff", textDecoration: "none" }}
+                            >📥 Download</a>
                           ) : (
                             <span className="px-4 py-2 rounded-lg text-sm font-medium ml-4" style={{ backgroundColor: "#f3f4f6", color: "#9ca3af" }}>🗑️ Deleted</span>
                           )}
