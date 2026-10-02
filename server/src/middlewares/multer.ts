@@ -22,26 +22,14 @@ const DANGEROUS_MIMES = new Set([
   "application/x-7z-compressed",
 ])
 
-const DANGEROUS_SIGNATURES = [
-  { label: "Windows EXE (MZ header)",  bytes: Buffer.from([0x4d, 0x5a]) },
-  { label: "ELF executable",           bytes: Buffer.from([0x7f, 0x45, 0x4c, 0x46]) },
-  { label: "Mach-O binary",            bytes: Buffer.from([0xfe, 0xed, 0xfa, 0xce]) },
-  { label: "Mach-O binary (64-bit)",   bytes: Buffer.from([0xfe, 0xed, 0xfa, 0xcf]) },
-  { label: "Java class file",          bytes: Buffer.from([0xca, 0xfe, 0xba, 0xbe]) },
-  { label: "Shell script",             bytes: Buffer.from([0x23, 0x21]) },
-]
+// Mid-file binary scanning was removed — it caused too many false positives on
+// legitimate PDFs (fonts/compressed streams contain MZ bytes) and WhatsApp
+// JPEGs (EXIF data contains #! bytes). Protection comes from:
+//   1. Magic-byte detection via file-type (detectedType check below)
+//   2. Dangerous MIME type blocklist
+//   3. Extension allowlist
 
-function containsDangerousPayload(buffer: Buffer): string | null {
-  const scanFrom = 4
-  for (const sig of DANGEROUS_SIGNATURES) {
-    const idx = buffer.indexOf(sig.bytes, scanFrom)
-    if (idx !== -1) return `${sig.label} signature found at byte offset ${idx}`
-  }
-  return null
-}
-
-// ─── Step 1: multer just collects files into memory ──────────────────────────
-// No fileFilter here — we validate in the middleware below after buffer is ready
+// ─── Step 1: multer collects files into memory ───────────────────────────────
 export const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
@@ -51,7 +39,7 @@ export const upload = multer({
 })
 
 // ─── Step 2: validate + upload to Cloudinary ─────────────────────────────────
-// Use this middleware AFTER upload.array("files") in the route
+// Used AFTER upload.array("files") in the route
 export const validateAndUploadToCloudinary = async (
   req: Request,
   res: Response,
@@ -66,7 +54,7 @@ export const validateAndUploadToCloudinary = async (
     for (const file of files) {
       const buffer = file.buffer
 
-      // Guard: too small
+      // Guard: too small to be a valid document
       if (buffer.length < 10) {
         res.status(400).json({ success: false, message: `File "${file.originalname}" is too small to be valid.` })
         return
@@ -75,39 +63,27 @@ export const validateAndUploadToCloudinary = async (
       const detectedType = await fromBuffer(buffer)
 
       if (detectedType) {
-        // Block dangerous MIME types
+        // Block dangerous MIME types (exe, dll, zip, etc.)
         if (DANGEROUS_MIMES.has(detectedType.mime)) {
           res.status(400).json({ success: false, message: `Blocked: "${file.originalname}" is a dangerous file type.` })
           return
         }
 
-        // Block unknown types
+        // Block anything not in our allowlist
         if (!ALLOWED_EXTENSIONS.has(detectedType.ext)) {
           res.status(400).json({ success: false, message: `File type not allowed: .${detectedType.ext}` })
           return
         }
-
-        // Polyglot check
-        const threat = containsDangerousPayload(buffer)
-        if (threat) {
-          res.status(400).json({ success: false, message: `Blocked: "${file.originalname}" contains an embedded payload.` })
-          return
-        }
       } else {
-        // No magic bytes — only allow known text types
+        // file-type returned undefined — no magic bytes (plain text / CSV)
+        // Only allow known text-based MIME types
         if (!TEXT_BASED_MIMES.has(file.mimetype)) {
           res.status(400).json({ success: false, message: `Could not verify file type for "${file.originalname}".` })
           return
         }
-
-        const threat = containsDangerousPayload(buffer)
-        if (threat) {
-          res.status(400).json({ success: false, message: `Blocked: "${file.originalname}" contains a suspicious payload.` })
-          return
-        }
       }
 
-      // ── Upload buffer to Cloudinary ──────────────────────────────────────
+      // ── Upload buffer directly to Cloudinary ─────────────────────────────
       const imageTypes = ["image/png", "image/jpeg", "image/jpg"]
       const resourceType = imageTypes.includes(file.mimetype) ? "image" : "raw"
 
@@ -130,12 +106,12 @@ export const validateAndUploadToCloudinary = async (
         originalname: file.originalname,
         mimetype: file.mimetype,
         size: file.size,
-        path: result.secure_url,       // Cloudinary URL
-        filename: result.public_id,    // Cloudinary public_id for deletion
+        path: result.secure_url,    // Cloudinary URL
+        filename: result.public_id, // Cloudinary public_id for deletion later
       })
     }
 
-    // Replace req.files with our enriched array so the controller works as before
+    // Replace req.files with enriched array — controller stays unchanged
     ;(req as any).files = uploadedFiles
     next()
   } catch (err: any) {
