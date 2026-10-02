@@ -84,8 +84,12 @@ export const validateAndUploadToCloudinary = async (
       }
 
       // ── Upload buffer directly to Cloudinary ─────────────────────────────
+      // PDFs must use resource_type "image" — Cloudinary handles PDF rendering
+      // and serves them with correct Content-Type for browser viewing.
+      // Office docs / txt / csv use "raw" since they are downloaded, not viewed.
       const imageTypes = ["image/png", "image/jpeg", "image/jpg"]
-      const resourceType = imageTypes.includes(file.mimetype) ? "image" : "raw"
+      const pdfType = file.mimetype === "application/pdf"
+      const resourceType = (imageTypes.includes(file.mimetype) || pdfType) ? "image" : "raw"
 
       const result = await new Promise<any>((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
@@ -108,6 +112,7 @@ export const validateAndUploadToCloudinary = async (
         size: file.size,
         path: result.secure_url,    // Cloudinary URL
         filename: result.public_id, // Cloudinary public_id for deletion later
+        resourceType,               // needed for correct deletion
       })
     }
 

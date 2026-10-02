@@ -4,6 +4,7 @@ export interface IFile {
   name: string
   url: string
   publicId?: string
+  resourceType?: string
   size?: number
   copies: number
   colorMode: "bw" | "color"
@@ -41,6 +42,7 @@ const totalJobsSchema = new Schema<ITotalJobs>(
         name: { type: String, required: true },
         url: { type: String, required: true },
         publicId: { type: String },
+        resourceType: { type: String, default: "raw" },
         size: { type: Number },
         copies: { type: Number, default: 1, min: 1 },
         colorMode: { type: String, enum: ["bw", "color"], default: "bw" },

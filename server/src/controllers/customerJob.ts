@@ -30,6 +30,7 @@ export const createJob = async (req: Request, res: Response): Promise<any> => {
       name: file.originalname,
       url: file.path,
       publicId: file.filename,
+      resourceType: file.resourceType,
       size: file.size,
       copies: req.body.copies?.[index] || 1,
       colorMode: req.body.colorMode?.[index] || "bw",
@@ -59,7 +60,9 @@ export const createJob = async (req: Request, res: Response): Promise<any> => {
         if (freshJob) {
           for (const file of freshJob.files) {
             if (file.publicId) {
-              await cloudinary.uploader.destroy("printshop-files/" + file.publicId)
+              await cloudinary.uploader.destroy(file.publicId, {
+                resource_type: file.resourceType || "raw",
+              })
             }
           }
           const updatedFiles = freshJob.files.map((f: any) => ({
