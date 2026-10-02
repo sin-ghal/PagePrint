@@ -84,19 +84,23 @@ export const validateAndUploadToCloudinary = async (
       }
 
       // ── Upload buffer directly to Cloudinary ─────────────────────────────
-      // PDFs must use resource_type "image" — Cloudinary handles PDF rendering
-      // and serves them with correct Content-Type for browser viewing.
-      // Office docs / txt / csv use "raw" since they are downloaded, not viewed.
+      // All non-image files (including PDFs) use "raw" — they will be downloaded
+      // by the shopkeeper rather than rendered inline in the browser.
       const imageTypes = ["image/png", "image/jpeg", "image/jpg"]
-      const pdfType = file.mimetype === "application/pdf"
-      const resourceType = (imageTypes.includes(file.mimetype) || pdfType) ? "image" : "raw"
+      const resourceType = imageTypes.includes(file.mimetype) ? "image" : "raw"
+
+      // Strip extension from public_id — Cloudinary adds it automatically,
+      // which caused double extensions like "file.pdf.pdf"
+      const baseName = file.originalname
+        .replace(/\s+/g, "_")
+        .replace(/\.[^/.]+$/, "") // remove extension
 
       const result = await new Promise<any>((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
           {
             folder: "printshop-files",
             resource_type: resourceType,
-            public_id: `${Date.now()}-${file.originalname.replace(/\s+/g, "_")}`,
+            public_id: `${Date.now()}-${baseName}`,
           },
           (error, result) => {
             if (error) reject(error)
