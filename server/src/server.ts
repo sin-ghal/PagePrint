@@ -17,6 +17,8 @@ import shopkeeperRoutes from "./routes/shopkeeperRoutes"
 
 const app = express()
 
+app.set("trust proxy", 1)
+
 app.use(express.json())
 app.use(cookieParser())
 app.use(
