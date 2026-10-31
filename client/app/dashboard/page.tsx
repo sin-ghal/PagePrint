@@ -190,23 +190,17 @@ export default function DashboardPage() {
                             </div>
                           </div>
                           {file.url ? (
-                            <div className="flex items-center gap-2 ml-4">
-                              <a
-                                href={file.url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="px-3 py-2 rounded-lg text-sm font-medium transition hover:shadow hover:scale-105 active:scale-95 cursor-pointer"
-                                style={{ backgroundColor: "#2563eb", color: "#fff", textDecoration: "none" }}
-                              >👁️ View</a>
-                              <a
-                                href={file.url}
-                                target="_blank"
-                                rel="noreferrer"
-                                download={file.name}
-                                className="px-4 py-2 rounded-lg text-sm font-medium transition hover:shadow-lg hover:scale-105 active:scale-95 cursor-pointer"
-                                style={{ backgroundColor: "#c0392b", color: "#fff", textDecoration: "none" }}
-                              >📥 Download</a>
-                            </div>
+                            <a
+                              href={
+                                file.name?.match(/\.pdf$/i)
+                                  ? `https://docs.google.com/viewer?url=${encodeURIComponent(file.url)}`
+                                  : file.url
+                              }
+                              target="_blank"
+                              rel="noreferrer"
+                              className="px-4 py-2 rounded-lg text-sm font-medium ml-4 transition hover:shadow-lg hover:scale-105 active:scale-95 cursor-pointer"
+                              style={{ backgroundColor: "#d25042ff", color: "#fff", textDecoration: "none" }}
+                            >📥 Download</a>
                           ) : (
                             <span className="px-4 py-2 rounded-lg text-sm font-medium ml-4" style={{ backgroundColor: "#f3f4f6", color: "#9ca3af" }}>🗑️ Deleted</span>
                           )}
