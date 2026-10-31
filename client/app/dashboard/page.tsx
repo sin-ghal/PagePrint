@@ -190,18 +190,31 @@ export default function DashboardPage() {
                             </div>
                           </div>
                           {file.url ? (
-                            <a
-                              href={
-                                file.name?.match(/\.pdf$/i)
-                                  ? `https://docs.google.com/viewer?url=${encodeURIComponent(file.url)}`
-                                  : file.url
-                              }
-                              target="_blank"
-                              rel="noreferrer"
-                              download={file.name?.match(/\.(pdf|png|jpe?g)$/i) ? undefined : true}
-                              className="px-4 py-2 rounded-lg text-sm font-medium ml-4 transition hover:shadow-lg hover:scale-105 active:scale-95"
-                              style={{ backgroundColor: "#d25042ff", color: "#fff", textDecoration: "none" }}
-                            >📥 Download</a>
+                            <div className="flex items-center gap-2 ml-4">
+                              <a
+                                href={
+                                  file.streamUrl
+                                    ? `${(process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000").replace(/\/+$/, "")}${file.streamUrl}?token=${encodeURIComponent(token)}`
+                                    : file.url
+                                }
+                                target="_blank"
+                                rel="noreferrer"
+                                className="px-3 py-2 rounded-lg text-sm font-medium transition hover:shadow hover:scale-105 active:scale-95 cursor-pointer"
+                                style={{ backgroundColor: "#2563eb", color: "#fff", textDecoration: "none" }}
+                              >👁️ View</a>
+                              <a
+                                href={
+                                  file.streamUrl
+                                    ? `${(process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000").replace(/\/+$/, "")}${file.streamUrl}?download=true&token=${encodeURIComponent(token)}`
+                                    : file.downloadUrl || file.url
+                                }
+                                target="_blank"
+                                rel="noreferrer"
+                                download={file.name}
+                                className="px-3 py-2 rounded-lg text-sm font-medium transition hover:shadow-lg hover:scale-105 active:scale-95 cursor-pointer"
+                                style={{ backgroundColor: "#c0392b", color: "#fff", textDecoration: "none" }}
+                              >📥 Download</a>
+                            </div>
                           ) : (
                             <span className="px-4 py-2 rounded-lg text-sm font-medium ml-4" style={{ backgroundColor: "#f3f4f6", color: "#9ca3af" }}>🗑️ Deleted</span>
                           )}

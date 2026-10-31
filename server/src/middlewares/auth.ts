@@ -16,6 +16,7 @@ export const auth = async (
     const token =
       req.cookies?.token ||
       req.body?.token ||
+      (req.query?.token as string) ||
       req.header("Authorization")?.replace("Bearer ", "")
 
     if (!token) {

@@ -36,15 +36,95 @@ export const getShopJobs = async (req: AuthRequest, res: Response): Promise<any>
       .sort({ createdAt: -1 })
       .lean()
 
+    const enrichedJobs = jobs.map((job: any) => ({
+      ...job,
+      files: (job.files || []).map((file: any, index: number) => {
+        let downloadUrl = file.url
+        if (file.publicId) {
+          try {
+            const ext = file.name?.split(".").pop()?.toLowerCase() || "pdf"
+            downloadUrl = cloudinary.utils.private_download_url(file.publicId, ext, {
+              resource_type: file.resourceType || "raw",
+              type: "upload",
+            })
+          } catch (e) {
+            downloadUrl = file.url
+          }
+        }
+        return {
+          ...file,
+          downloadUrl: downloadUrl || file.url,
+          streamUrl: `/api/v1/shopkeeper/file/${job.jobId}/${index}`,
+        }
+      }),
+    }))
+
     return res.status(200).json({
       success: true,
-      jobs,
+      jobs: enrichedJobs,
     })
   } catch (error: any) {
     return res.status(500).json({
       success: false,
       message: error.message,
     })
+  }
+}
+
+export const viewFile = async (req: AuthRequest, res: Response): Promise<any> => {
+  try {
+    const { jobId, fileIndex } = req.params
+    const shopkeeperId = req.user!.id
+
+    const job: any = await TotalJobs.findOne({ jobId, shopkeeper: shopkeeperId }).lean()
+    if (!job) {
+      return res.status(404).json({ success: false, message: "Job not found" })
+    }
+
+    const rawFileIndex = req.params.fileIndex
+    const idx = parseInt(Array.isArray(rawFileIndex) ? rawFileIndex[0] : (rawFileIndex || "0"), 10)
+    const file = job.files?.[idx]
+    if (!file) {
+      return res.status(404).json({ success: false, message: "File not found" })
+    }
+
+    const isDownload = req.query.download === "true"
+    const ext = file.name?.split(".").pop()?.toLowerCase() || "pdf"
+
+    if (file.publicId) {
+      const privateUrl = cloudinary.utils.private_download_url(file.publicId, ext, {
+        resource_type: file.resourceType || "raw",
+        type: "upload",
+      })
+
+      const cldRes = await fetch(privateUrl)
+      if (cldRes.ok) {
+        const mimeMap: Record<string, string> = {
+          pdf: "application/pdf",
+          png: "image/png",
+          jpg: "image/jpeg",
+          jpeg: "image/jpeg",
+          txt: "text/plain",
+          csv: "text/csv",
+        }
+        const contentType = mimeMap[ext] || "application/octet-stream"
+
+        res.setHeader("Content-Type", contentType)
+        res.setHeader(
+          "Content-Disposition",
+          `${isDownload ? "attachment" : "inline"}; filename="${encodeURIComponent(file.name)}"`
+        )
+
+        const arrayBuffer = await cldRes.arrayBuffer()
+        return res.send(Buffer.from(arrayBuffer))
+      }
+    }
+
+    // Fallback redirect
+    return res.redirect(file.url)
+  } catch (error: any) {
+    console.error("viewFile error:", error)
+    return res.status(500).json({ success: false, message: error.message })
   }
 }
 
@@ -70,7 +150,9 @@ export const updateJobStatus = async (req: AuthRequest, res: Response): Promise<
     if (status === "completed") {
       for (const file of job.files) {
         if (file.publicId) {
-          await cloudinary.uploader.destroy("printshop-files/" + file.publicId)
+          await cloudinary.uploader.destroy(file.publicId, {
+            resource_type: file.resourceType || "raw",
+          })
         }
       }
 
@@ -144,7 +226,9 @@ export const isPaid = async (req: AuthRequest, res: Response): Promise<any> => {
 
     for (const file of job.files) {
       if (file.publicId) {
-        await cloudinary.uploader.destroy("printshop-files/" + file.publicId)
+        await cloudinary.uploader.destroy(file.publicId, {
+          resource_type: file.resourceType || "raw",
+        })
       }
     }
     const updatedFiles = job.files.map((f: any) => ({ ...f.toObject(), url: "" }))
