@@ -36,32 +36,9 @@ export const getShopJobs = async (req: AuthRequest, res: Response): Promise<any>
       .sort({ createdAt: -1 })
       .lean()
 
-    const enrichedJobs = jobs.map((job: any) => ({
-      ...job,
-      files: (job.files || []).map((file: any, index: number) => {
-        let downloadUrl = file.url
-        if (file.publicId) {
-          try {
-            const ext = file.name?.split(".").pop()?.toLowerCase() || "pdf"
-            downloadUrl = cloudinary.utils.private_download_url(file.publicId, ext, {
-              resource_type: file.resourceType || "raw",
-              type: "upload",
-            })
-          } catch (e) {
-            downloadUrl = file.url
-          }
-        }
-        return {
-          ...file,
-          downloadUrl: downloadUrl || file.url,
-          streamUrl: `/api/v1/shopkeeper/file/${job.jobId}/${index}`,
-        }
-      }),
-    }))
-
     return res.status(200).json({
       success: true,
-      jobs: enrichedJobs,
+      jobs,
     })
   } catch (error: any) {
     return res.status(500).json({
