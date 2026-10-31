@@ -79,6 +79,48 @@ export default function DashboardPage() {
     } catch (err) { toast.error("Failed to mark paid") }
   }
 
+  const handleView = async (file: any, index: number, jobId: string) => {
+    const toastId = toast.loading("Opening preview...")
+    try {
+      const endpoint = file.streamUrl || `/shopkeeper/file/${jobId}/${index}`
+      const res = await API.get(endpoint, {
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: "blob",
+      })
+      const ext = file.name?.split(".").pop()?.toLowerCase() || "pdf"
+      const mime = ext === "pdf" ? "application/pdf" : ext === "png" ? "image/png" : ext === "jpg" || ext === "jpeg" ? "image/jpeg" : "application/octet-stream"
+      const blob = new Blob([res.data], { type: mime })
+      const blobUrl = window.URL.createObjectURL(blob)
+      window.open(blobUrl, "_blank")
+      toast.dismiss(toastId)
+    } catch (err: any) {
+      toast.error("Failed to preview file", { id: toastId })
+    }
+  }
+
+  const handleDownload = async (file: any, index: number, jobId: string) => {
+    const toastId = toast.loading("Downloading...")
+    try {
+      const endpoint = (file.streamUrl || `/shopkeeper/file/${jobId}/${index}`) + "?download=true"
+      const res = await API.get(endpoint, {
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: "blob",
+      })
+      const blob = new Blob([res.data])
+      const blobUrl = window.URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = blobUrl
+      link.download = file.name || "document.pdf"
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(blobUrl)
+      toast.success("Downloaded!", { id: toastId })
+    } catch (err: any) {
+      toast.error("Download failed", { id: toastId })
+    }
+  }
+
   const handleLogout = () => {
     localStorage.removeItem("token")
     localStorage.removeItem("user")
@@ -191,29 +233,18 @@ export default function DashboardPage() {
                           </div>
                           {file.url ? (
                             <div className="flex items-center gap-2 ml-4">
-                              <a
-                                href={
-                                  file.streamUrl
-                                    ? `${(process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000").replace(/\/+$/, "")}${file.streamUrl}?token=${encodeURIComponent(token)}`
-                                    : file.url
-                                }
-                                target="_blank"
-                                rel="noreferrer"
+                              <button
+                                type="button"
+                                onClick={() => handleView(file, i, job.jobId)}
                                 className="px-3 py-2 rounded-lg text-sm font-medium transition hover:shadow hover:scale-105 active:scale-95 cursor-pointer"
-                                style={{ backgroundColor: "#2563eb", color: "#fff", textDecoration: "none" }}
-                              >👁️ View</a>
-                              <a
-                                href={
-                                  file.streamUrl
-                                    ? `${(process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000").replace(/\/+$/, "")}${file.streamUrl}?download=true&token=${encodeURIComponent(token)}`
-                                    : file.downloadUrl || file.url
-                                }
-                                target="_blank"
-                                rel="noreferrer"
-                                download={file.name}
-                                className="px-3 py-2 rounded-lg text-sm font-medium transition hover:shadow-lg hover:scale-105 active:scale-95 cursor-pointer"
-                                style={{ backgroundColor: "#c0392b", color: "#fff", textDecoration: "none" }}
-                              >📥 Download</a>
+                                style={{ backgroundColor: "#2563eb", color: "#fff", border: "none" }}
+                              >👁️ View</button>
+                              <button
+                                type="button"
+                                onClick={() => handleDownload(file, i, job.jobId)}
+                                className="px-4 py-2 rounded-lg text-sm font-medium transition hover:shadow-lg hover:scale-105 active:scale-95 cursor-pointer"
+                                style={{ backgroundColor: "#c0392b", color: "#fff", border: "none" }}
+                              >📥 Download</button>
                             </div>
                           ) : (
                             <span className="px-4 py-2 rounded-lg text-sm font-medium ml-4" style={{ backgroundColor: "#f3f4f6", color: "#9ca3af" }}>🗑️ Deleted</span>
