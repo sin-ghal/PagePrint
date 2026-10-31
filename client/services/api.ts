@@ -1,7 +1,10 @@
 import axios from "axios"
 
+const rawBackendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000"
+const backendUrl = rawBackendUrl.trim().replace(/\/+$/, "")
+
 const API = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000"}/api/v1`,
+  baseURL: `${backendUrl}/api/v1`,
   withCredentials: true,
 })
 

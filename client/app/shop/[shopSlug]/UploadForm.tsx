@@ -102,9 +102,25 @@ export default function UploadForm({ shopSlug, shop }: { shopSlug: string; shop:
         formData.append(`pages[${i}]`, opt.pages)
       })
       const res = await API.post(`/customer/create/${shopSlug}`, formData)
-      if (res.data.success) { setJobId(res.data.jobId); setSubmitted(true); toast.success("Files sent to shop!") }
-    } catch (err: any) { toast.error(err.response?.data?.message || "Failed to send files") }
-    setSubmitting(false)
+      if (res.data?.success) {
+        setJobId(res.data.jobId)
+        setSubmitted(true)
+        toast.success("Files sent to shop!")
+      } else {
+        toast.error(res.data?.message || "Failed to send files")
+      }
+    } catch (err: any) {
+      console.error("Upload error details:", err)
+      const errorMsg =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        (err.code === "ERR_NETWORK" ? "Network error: unable to reach server. Please check your connection." : null) ||
+        err.message ||
+        "Failed to send files"
+      toast.error(errorMsg)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   if (submitted) return (<div className="min-h-[60vh] flex items-center justify-center"><div className="text-center p-8 rounded-2xl max-w-md" style={{ backgroundColor: "#fff", border: "1px solid #e5e7eb" }}><p className="text-5xl mb-4">✅</p><h2 className="text-2xl font-bold" style={{ color: "#1a1a2e" }}>Files Sent!</h2><p className="mt-2" style={{ color: "#6b7280" }}>Your files have been sent to {shop.shopName}</p><div className="mt-4 p-3 rounded-lg" style={{ backgroundColor: "#fdecea" }}><p className="text-sm font-medium" style={{ color: "#c0392b" }}>Job ID: {jobId}</p></div><p className="text-xs mt-4" style={{ color: "#9ca3af" }}>Track your job: <a href={`/status/${jobId}`} className="font-medium" style={{ color: "#c0392b", textDecoration: "underline" }}>Click here to track status</a></p></div></div>)

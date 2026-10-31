@@ -79,16 +79,17 @@ export const validateAndUploadToCloudinary = async (
       const imageTypes = ["image/png", "image/jpeg", "image/jpg"]
       const resourceType = imageTypes.includes(file.mimetype) ? "image" : "raw"
 
-      // Strip existing extension from baseName to avoid .pdf.pdf
-      const baseName = file.originalname
-        .replace(/\s+/g, "_")
+      // Strip existing extension & sanitize all non-alphanumeric chars to prevent Cloudinary invalid public_id errors
+      const cleanBaseName = file.originalname
         .replace(/\.[^/.]+$/, "")
+        .replace(/[^a-zA-Z0-9_-]/g, "_")
+        .replace(/_+/g, "_")
+        .slice(0, 50) || "file"
 
       // For "raw" files (PDFs, Office Docs), Cloudinary needs the extension in public_id
-      // For images, Cloudinary handles formatting automatically
       const publicId = resourceType === "raw" && fileExt
-        ? `${Date.now()}-${baseName}.${fileExt}`
-        : `${Date.now()}-${baseName}`
+        ? `${Date.now()}-${cleanBaseName}.${fileExt}`
+        : `${Date.now()}-${cleanBaseName}`
 
       const result = await new Promise<any>((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
@@ -120,6 +121,6 @@ export const validateAndUploadToCloudinary = async (
     next()
   } catch (err: any) {
     console.error("Upload middleware error:", err)
-    res.status(500).json({ success: false, message: "File upload failed: " + err.message })
+    res.status(500).json({ success: false, message: "File upload failed: " + (err.message || "Unknown error") })
   }
 }

@@ -8,9 +8,10 @@ interface Shop {
 }
 
 async function getShop(shopSlug: string): Promise<Shop | null> {
-  const base = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000"
+  const rawBase = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000"
+  const base = rawBase.trim().replace(/\/+$/, "")
   try {
-    const res = await fetch(`${base}/api/v1/customer/shop/${shopSlug}`, {
+    const res = await fetch(`${base}/api/v1/customer/shop/${encodeURIComponent(shopSlug.trim())}`, {
       cache: "no-store",
     })
     if (!res.ok) return null
