@@ -6,6 +6,7 @@ import Link from "next/link"
 import toast from "react-hot-toast"
 import { io } from "socket.io-client"
 import API from "../../services/api"
+import AIBusinessInsights from "../../components/AIBusinessInsights"
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -46,7 +47,11 @@ export default function DashboardPage() {
     try {
       const res = await API.get("/shopkeeper/my-jobs", { headers: { Authorization: `Bearer ${token}` } })
       if (res.data.success) setJobs(res.data.jobs)
-    } catch (err) { toast.error("Failed to load jobs") }
+    } catch (err: any) {
+      if (err?.response?.status !== 401) {
+        toast.error("Failed to load jobs")
+      }
+    }
     setLoading(false)
   }
 
@@ -131,12 +136,17 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-2 md:gap-4 mb-8">
+        {/* Quick Stats Grid */}
+        <div className="grid grid-cols-3 gap-2 md:gap-4 mb-6">
           <div className="p-5 rounded-xl" style={{ backgroundColor: "#fff", border: "1px solid #e5e7eb" }}><p className="text-2xl font-bold" style={{ color: "#1a1a2e" }}>{stats.total}</p><p className="text-sm" style={{ color: "#6b7280" }}>Total Jobs</p></div>
           <div className="p-5 rounded-xl" style={{ backgroundColor: "#fff", border: "1px solid #e5e7eb" }}><p className="text-2xl font-bold" style={{ color: "#f59e0b" }}>{stats.pending}</p><p className="text-sm" style={{ color: "#6b7280" }}>Pending</p></div>
           <div className="p-5 rounded-xl" style={{ backgroundColor: "#fff", border: "1px solid #e5e7eb" }}><p className="text-2xl font-bold" style={{ color: "#10b981" }}>{stats.completed}</p><p className="text-sm" style={{ color: "#6b7280" }}>Completed</p></div>
         </div>
 
+        {/* ✨ AI Business Assistant & Insights */}
+        {token && <AIBusinessInsights token={token} />}
+
+        {/* Filter Tabs */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-3">
           <div className="flex gap-2 flex-wrap">
             {["all", "pending", "ready", "completed"].map((tab) => (
@@ -182,9 +192,6 @@ export default function DashboardPage() {
                           {file.url ? (
                             <a
                               href={
-                                // PDFs → Google Docs viewer (opens in browser without download)
-                                // Images → direct Cloudinary URL
-                                // Office/other → direct download
                                 file.name?.match(/\.pdf$/i)
                                   ? `https://docs.google.com/viewer?url=${encodeURIComponent(file.url)}`
                                   : file.url
