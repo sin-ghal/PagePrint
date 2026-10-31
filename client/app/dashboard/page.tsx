@@ -191,16 +191,12 @@ export default function DashboardPage() {
                           </div>
                           {file.url ? (
                             <a
-                              href={
-                                file.name?.match(/\.pdf$/i)
-                                  ? `https://docs.google.com/viewer?url=${encodeURIComponent(file.url)}`
-                                  : file.url
-                              }
+                              href={file.url}
                               target="_blank"
                               rel="noreferrer"
                               className="px-4 py-2 rounded-lg text-sm font-medium ml-4 transition hover:shadow-lg hover:scale-105 active:scale-95 cursor-pointer"
                               style={{ backgroundColor: "#d25042ff", color: "#fff", textDecoration: "none" }}
-                            >📥 Download</a>
+                            >👁️ View File</a>
                           ) : (
                             <span className="px-4 py-2 rounded-lg text-sm font-medium ml-4" style={{ backgroundColor: "#f3f4f6", color: "#9ca3af" }}>🗑️ Deleted</span>
                           )}
