@@ -51,9 +51,20 @@ export default function UploadForm({ shopSlug, shop }: { shopSlug: string; shop:
       "text/csv",
     ]
 
-    const invalidFiles = selected.filter((f) => !allowedTypes.includes(f.type))
+    const allowedExtensions = [
+      "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx",
+      "png", "jpg", "jpeg", "txt", "csv",
+    ]
+
+    const invalidFiles = selected.filter((f) => {
+      const ext = f.name.split(".").pop()?.toLowerCase() || ""
+      const isAllowedMime = allowedTypes.includes(f.type)
+      const isAllowedExt = allowedExtensions.includes(ext)
+      return !isAllowedMime && !isAllowedExt
+    })
+
     if (invalidFiles.length > 0) {
-      toast.error(`Invalid file type: ${invalidFiles.map((f) => f.name).join(", ")}. Videos and other media are not allowed.`)
+      toast.error(`Invalid file type: ${invalidFiles.map((f) => f.name).join(", ")}. Only documents, PDFs, and images are allowed.`)
       e.target.value = ""
       return
     }
@@ -90,7 +101,7 @@ export default function UploadForm({ shopSlug, shop }: { shopSlug: string; shop:
         formData.append(`sides[${i}]`, opt.sides)
         formData.append(`pages[${i}]`, opt.pages)
       })
-      const res = await API.post(`/customer/create/${shopSlug}`, formData, { headers: { "Content-Type": "multipart/form-data" } })
+      const res = await API.post(`/customer/create/${shopSlug}`, formData)
       if (res.data.success) { setJobId(res.data.jobId); setSubmitted(true); toast.success("Files sent to shop!") }
     } catch (err: any) { toast.error(err.response?.data?.message || "Failed to send files") }
     setSubmitting(false)

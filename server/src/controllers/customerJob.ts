@@ -30,13 +30,13 @@ export const createJob = async (req: Request, res: Response): Promise<any> => {
       name: file.originalname,
       url: file.path,
       publicId: file.filename,
-      resourceType: file.resourceType,
+      resourceType: file.resourceType || "raw",
       size: file.size,
-      copies: req.body.copies?.[index] || 1,
-      colorMode: req.body.colorMode?.[index] || "bw",
-      paperSize: req.body.paperSize?.[index] || "A4",
-      sides: req.body.sides?.[index] || "single",
-      pages: req.body.pages?.[index] || "all",
+      copies: Number(req.body[`copies[${index}]`] || req.body.copies?.[index] || 1),
+      colorMode: req.body[`colorMode[${index}]`] || req.body.colorMode?.[index] || "bw",
+      paperSize: req.body[`paperSize[${index}]`] || req.body.paperSize?.[index] || "A4",
+      sides: req.body[`sides[${index}]`] || req.body.sides?.[index] || "single",
+      pages: req.body[`pages[${index}]`] || req.body.pages?.[index] || "all",
     }))
 
     const jobId = "JOB-" + crypto.randomUUID().slice(0, 6).toUpperCase()
@@ -48,11 +48,15 @@ export const createJob = async (req: Request, res: Response): Promise<any> => {
       remarks,
     })
 
-    const io = getIO()
-    io.to(shopkeeper._id.toString()).emit("new-job", {
-      jobId: job.jobId,
-      files: job.files.length,
-    })
+    try {
+      const io = getIO()
+      io.to(shopkeeper._id.toString()).emit("new-job", {
+        jobId: job.jobId,
+        files: job.files.length,
+      })
+    } catch (sockErr: any) {
+      console.warn("Socket notification notice:", sockErr?.message || sockErr)
+    }
 
     setTimeout(async () => {
       try {

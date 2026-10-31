@@ -22,13 +22,6 @@ const DANGEROUS_MIMES = new Set([
   "application/x-7z-compressed",
 ])
 
-// Mid-file binary scanning was removed — it caused too many false positives on
-// legitimate PDFs (fonts/compressed streams contain MZ bytes) and WhatsApp
-// JPEGs (EXIF data contains #! bytes). Protection comes from:
-//   1. Magic-byte detection via file-type (detectedType check below)
-//   2. Dangerous MIME type blocklist
-//   3. Extension allowlist
-
 // ─── Step 1: multer collects files into memory ───────────────────────────────
 export const upload = multer({
   storage: multer.memoryStorage(),
@@ -39,7 +32,6 @@ export const upload = multer({
 })
 
 // ─── Step 2: validate + upload to Cloudinary ─────────────────────────────────
-// Used AFTER upload.array("files") in the route
 export const validateAndUploadToCloudinary = async (
   req: Request,
   res: Response,
@@ -61,46 +53,49 @@ export const validateAndUploadToCloudinary = async (
       }
 
       const detectedType = await fromBuffer(buffer)
+      const fileExt = file.originalname.split(".").pop()?.toLowerCase() || ""
 
       if (detectedType) {
-        // Block dangerous MIME types (exe, dll, zip, etc.)
+        // Block dangerous MIME types
         if (DANGEROUS_MIMES.has(detectedType.mime)) {
           res.status(400).json({ success: false, message: `Blocked: "${file.originalname}" is a dangerous file type.` })
           return
         }
 
-        // Block anything not in our allowlist
-        if (!ALLOWED_EXTENSIONS.has(detectedType.ext)) {
+        // Check against allowlist (by detected ext OR original filename ext)
+        if (!ALLOWED_EXTENSIONS.has(detectedType.ext) && !ALLOWED_EXTENSIONS.has(fileExt)) {
           res.status(400).json({ success: false, message: `File type not allowed: .${detectedType.ext}` })
           return
         }
       } else {
-        // file-type returned undefined — no magic bytes (plain text / CSV)
-        // Only allow known text-based MIME types
-        if (!TEXT_BASED_MIMES.has(file.mimetype)) {
+        // file-type returned undefined (e.g. plain text, CSV, or certain document types)
+        if (!TEXT_BASED_MIMES.has(file.mimetype) && !ALLOWED_EXTENSIONS.has(fileExt)) {
           res.status(400).json({ success: false, message: `Could not verify file type for "${file.originalname}".` })
           return
         }
       }
 
       // ── Upload buffer directly to Cloudinary ─────────────────────────────
-      // All non-image files (including PDFs) use "raw" — they will be downloaded
-      // by the shopkeeper rather than rendered inline in the browser.
       const imageTypes = ["image/png", "image/jpeg", "image/jpg"]
       const resourceType = imageTypes.includes(file.mimetype) ? "image" : "raw"
 
-      // Strip extension from public_id — Cloudinary adds it automatically,
-      // which caused double extensions like "file.pdf.pdf"
+      // Strip existing extension from baseName to avoid .pdf.pdf
       const baseName = file.originalname
         .replace(/\s+/g, "_")
-        .replace(/\.[^/.]+$/, "") // remove extension
+        .replace(/\.[^/.]+$/, "")
+
+      // For "raw" files (PDFs, Office Docs), Cloudinary needs the extension in public_id
+      // For images, Cloudinary handles formatting automatically
+      const publicId = resourceType === "raw" && fileExt
+        ? `${Date.now()}-${baseName}.${fileExt}`
+        : `${Date.now()}-${baseName}`
 
       const result = await new Promise<any>((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
           {
             folder: "printshop-files",
             resource_type: resourceType,
-            public_id: `${Date.now()}-${baseName}`,
+            public_id: publicId,
           },
           (error, result) => {
             if (error) reject(error)
@@ -120,7 +115,7 @@ export const validateAndUploadToCloudinary = async (
       })
     }
 
-    // Replace req.files with enriched array — controller stays unchanged
+    // Replace req.files with enriched array
     ;(req as any).files = uploadedFiles
     next()
   } catch (err: any) {
