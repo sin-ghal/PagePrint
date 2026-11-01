@@ -6,12 +6,12 @@ import http from "http"
 import cookieParser from "cookie-parser"
 import cors from "cors"
 import rateLimit from "express-rate-limit"
-import multer from "multer"
 
 import { dbconnect } from "./config/database"
 import { cloudinaryConnect } from "./config/cloudinary"
 import { initSocket } from "./config/socket"
 import { startAutoCleanup } from "./utils/autoCleanup"
+import { multerErrorHandler } from "./middlewares/multer"
 
 import authRoutes from "./routes/authRoutes"
 import customerRoutes from "./routes/customerRoutes"
@@ -86,18 +86,12 @@ app.use("/api/v1/auth", authLimiter, authRoutes)
 app.use("/api/v1/customer", uploadLimiter, customerRoutes)
 app.use("/api/v1/shopkeeper", generalLimiter, shopkeeperRoutes)
 
+// Multer upload errors
+app.use(multerErrorHandler)
+
 // Global Error Handler
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error("Global API Error:", err)
-  if (err instanceof multer.MulterError) {
-    if (err.code === "LIMIT_FILE_SIZE") {
-      return res.status(400).json({ success: false, message: "File exceeds 10MB limit." })
-    }
-    if (err.code === "LIMIT_FILE_COUNT") {
-      return res.status(400).json({ success: false, message: "Maximum 5 files allowed." })
-    }
-    return res.status(400).json({ success: false, message: `Upload error: ${err.message}` })
-  }
   return res.status(err.status || 500).json({
     success: false,
     message: err.message || "An unexpected error occurred.",

@@ -124,3 +124,25 @@ export const validateAndUploadToCloudinary = async (
     res.status(500).json({ success: false, message: "File upload failed: " + (err.message || "Unknown error") })
   }
 }
+
+// ─── Multer-specific error handler ───────────────────────────────────────────
+export const multerErrorHandler = (
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      res.status(400).json({ success: false, message: "File exceeds 10MB limit." })
+      return
+    }
+    if (err.code === "LIMIT_FILE_COUNT") {
+      res.status(400).json({ success: false, message: "Maximum 5 files allowed." })
+      return
+    }
+    res.status(400).json({ success: false, message: `Upload error: ${err.message}` })
+    return
+  }
+  next(err)
+}
