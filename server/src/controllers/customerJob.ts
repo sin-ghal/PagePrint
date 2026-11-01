@@ -1,7 +1,6 @@
 import { Request, Response } from "express"
 import TotalJobs, { IFile } from "../models/totalJobs"
 import Shopkeeper from "../models/Shopkeeper"
-import { v2 as cloudinary } from "cloudinary"
 import crypto from "crypto"
 import { getIO } from "../config/socket"
 
@@ -77,28 +76,9 @@ export const createJob = async (req: Request, res: Response): Promise<any> => {
       console.warn("Socket notification notice:", sockErr?.message || sockErr)
     }
 
-    setTimeout(async () => {
-      try {
-        const freshJob: any = await TotalJobs.findOne({ jobId: job.jobId })
-        if (freshJob) {
-          for (const file of freshJob.files) {
-            if (file.publicId) {
-              await cloudinary.uploader.destroy(file.publicId, {
-                resource_type: file.resourceType || "raw",
-              })
-            }
-          }
-          const updatedFiles = freshJob.files.map((f: any) => ({
-            ...f.toObject(),
-            url: "",
-          }))
-          await TotalJobs.findOneAndUpdate({ jobId: job.jobId }, { files: updatedFiles })
-          console.log(`Auto-deleted files for job ${job.jobId} after 15 min`)
-        }
-      } catch (err: any) {
-        console.log("Auto-delete error:", err.message)
-      }
-    }, 15 * 60 * 1000)
+    // Files are auto-deleted by the background sweeper (startAutoCleanup)
+    // once they outlive AUTO_DELETE_MINUTES. This is restart-safe, unlike an
+    // in-memory setTimeout which would be lost on server restart/redeploy.
 
     return res.status(201).json({
       success: true,

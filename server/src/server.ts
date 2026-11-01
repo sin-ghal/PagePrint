@@ -11,6 +11,7 @@ import multer from "multer"
 import { dbconnect } from "./config/database"
 import { cloudinaryConnect } from "./config/cloudinary"
 import { initSocket } from "./config/socket"
+import { startAutoCleanup } from "./utils/autoCleanup"
 
 import authRoutes from "./routes/authRoutes"
 import customerRoutes from "./routes/customerRoutes"
@@ -105,6 +106,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 
 dbconnect()
 cloudinaryConnect()
+startAutoCleanup()
 
 const PORT = process.env.PORT || 4000
 server.listen(PORT, () => {
