@@ -1,8 +1,45 @@
 import { Request, Response } from "express"
+import { v2 as cloudinary } from "cloudinary"
 import TotalJobs, { IFile } from "../models/totalJobs"
 import Shopkeeper from "../models/Shopkeeper"
 import crypto from "crypto"
 import { getIO } from "../config/socket"
+
+const AUTO_DELETE_MINUTES = Number(process.env.AUTO_DELETE_MINUTES) || 30
+
+// Delete a job's files from Cloudinary and clear their URLs in the DB.
+const cleanupJobFiles = async (jobId: string): Promise<void> => {
+  const job: any = await TotalJobs.findOne({ jobId })
+  if (!job) return
+
+  for (const file of job.files) {
+    if (file.publicId) {
+      try {
+        await cloudinary.uploader.destroy(file.publicId, {
+          resource_type: file.resourceType || "raw",
+        })
+      } catch (err: any) {
+        console.log(`Cloudinary destroy failed for ${file.publicId}:`, err?.message || err)
+      }
+    }
+  }
+
+  const updatedFiles = job.files.map((f: any) => ({ ...f.toObject(), url: "", publicId: "" }))
+  await TotalJobs.findOneAndUpdate({ jobId }, { files: updatedFiles })
+  console.log(`Auto-deleted files for job ${jobId} (after ${AUTO_DELETE_MINUTES} min)`)
+}
+
+// Schedule a job's files to be auto-deleted after AUTO_DELETE_MINUTES.
+// In-memory timer, so a pending deletion is lost if the server restarts.
+const scheduleJobCleanup = (jobId: string): void => {
+  const timer = setTimeout(() => {
+    cleanupJobFiles(jobId).catch((err: any) =>
+      console.log(`Auto-cleanup error for job ${jobId}:`, err?.message || err)
+    )
+  }, AUTO_DELETE_MINUTES * 60 * 1000)
+
+  if (typeof timer.unref === "function") timer.unref()
+}
 
 export const createJob = async (req: Request, res: Response): Promise<any> => {
   try {
@@ -76,9 +113,8 @@ export const createJob = async (req: Request, res: Response): Promise<any> => {
       console.warn("Socket notification notice:", sockErr?.message || sockErr)
     }
 
-    // Files are auto-deleted by the background sweeper (startAutoCleanup)
-    // once they outlive AUTO_DELETE_MINUTES. This is restart-safe, unlike an
-    // in-memory setTimeout which would be lost on server restart/redeploy.
+    // Auto-delete this job's files after AUTO_DELETE_MINUTES (in-memory timer).
+    scheduleJobCleanup(job.jobId)
 
     return res.status(201).json({
       success: true,

@@ -10,7 +10,6 @@ import rateLimit from "express-rate-limit"
 import { dbconnect } from "./config/database"
 import { cloudinaryConnect } from "./config/cloudinary"
 import { initSocket } from "./config/socket"
-import { startAutoCleanup } from "./utils/autoCleanup"
 import { multerErrorHandler } from "./middlewares/multer"
 
 import authRoutes from "./routes/authRoutes"
@@ -100,7 +99,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 
 dbconnect()
 cloudinaryConnect()
-startAutoCleanup()
 
 const PORT = process.env.PORT || 4000
 server.listen(PORT, () => {
