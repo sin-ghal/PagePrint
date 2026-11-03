@@ -5,7 +5,7 @@ import Shopkeeper from "../models/Shopkeeper"
 import crypto from "crypto"
 import { getIO } from "../config/socket"
 
-const AUTO_DELETE_MINUTES = Number(process.env.AUTO_DELETE_MINUTES) || 30
+const AUTO_DELETE_MINUTES = Number(process.env.AUTO_DELETE_MINUTES) || 10
 
 // Delete a job's files from Cloudinary and clear their URLs in the DB.
 const cleanupJobFiles = async (jobId: string): Promise<void> => {

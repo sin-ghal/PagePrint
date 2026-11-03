@@ -192,9 +192,6 @@ export default function AIBusinessInsights({ token }: Props) {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-bold text-gray-900 tracking-tight">AI Business Assistant</h2>
-              <span className="px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider rounded-full bg-red-100 text-[#c0392b]">
-                Gemini Powered
-              </span>
               {isCached && (
                 <span className="hidden md:inline px-2 py-0.5 text-[11px] font-medium rounded-full bg-gray-100 text-gray-500">
                   ⚡ Cached
