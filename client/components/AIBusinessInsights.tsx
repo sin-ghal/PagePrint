@@ -44,7 +44,6 @@ export default function AIBusinessInsights({ token }: Props) {
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [hasData, setHasData] = useState(true)
-  const [isCached, setIsCached] = useState(false)
 
   const fetchInsights = async (force = false) => {
     if (!token) return
@@ -52,8 +51,7 @@ export default function AIBusinessInsights({ token }: Props) {
     else setLoading(true)
 
     try {
-      const url = force ? "/shopkeeper/ai-insights?forceRefresh=true" : "/shopkeeper/ai-insights"
-      const res = await API.get(url, {
+      const res = await API.get("/shopkeeper/ai-insights", {
         headers: { Authorization: `Bearer ${token}` },
       })
 
@@ -63,7 +61,6 @@ export default function AIBusinessInsights({ token }: Props) {
         } else {
           setHasData(true)
           setInsights(res.data.insights)
-          setIsCached(Boolean(res.data.cached))
           if (force) toast.success("✨ Fresh AI Insights generated!")
         }
       }
@@ -192,11 +189,6 @@ export default function AIBusinessInsights({ token }: Props) {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-bold text-gray-900 tracking-tight">AI Business Assistant</h2>
-              {isCached && (
-                <span className="hidden md:inline px-2 py-0.5 text-[11px] font-medium rounded-full bg-gray-100 text-gray-500">
-                  ⚡ Cached
-                </span>
-              )}
             </div>
             <p className="text-xs text-gray-600 mt-0.5">{insights.summary}</p>
           </div>

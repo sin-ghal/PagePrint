@@ -5,29 +5,9 @@ import Shopkeeper from "../models/Shopkeeper"
 import { AuthRequest } from "../middlewares/auth"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 
-interface CacheEntry {
-  data: any
-  expiresAt: number
-}
-
-// In-memory cache: 6 hours TTL per shopkeeper
-const insightsCache = new Map<string, CacheEntry>()
-const CACHE_TTL_MS = 6 * 60 * 60 * 1000
-
 export const getShopAIInsights = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const shopkeeperId = req.user!.id
-    const forceRefresh = req.query.forceRefresh === "true"
-
-    // Check in-memory cache if not forced
-    const cached = insightsCache.get(shopkeeperId)
-    if (!forceRefresh && cached && cached.expiresAt > Date.now()) {
-      return res.status(200).json({
-        success: true,
-        cached: true,
-        insights: cached.data,
-      })
-    }
 
     const shop = await Shopkeeper.findById(shopkeeperId).select("shopName").lean()
     const shopName = shop?.shopName || "Aapki Print Shop"
@@ -194,7 +174,13 @@ OUTPUT SCHEMA (Must return valid JSON matching this exact structure):
   }
 }`
 
-        const response = await model.generateContent(systemPrompt)
+        // 5-second timeout so the UI doesn't hang if Gemini is slow
+        const response = await Promise.race([
+          model.generateContent(systemPrompt),
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error("Gemini API timeout")), 5000)
+          ),
+        ])
         const text = response.response.text()
         finalInsights = JSON.parse(text)
       } catch (aiErr: any) {
@@ -246,15 +232,8 @@ OUTPUT SCHEMA (Must return valid JSON matching this exact structure):
       staleReadyCount,
     }
 
-    // Cache the result
-    insightsCache.set(shopkeeperId, {
-      data: finalInsights,
-      expiresAt: Date.now() + CACHE_TTL_MS,
-    })
-
     return res.status(200).json({
       success: true,
-      cached: false,
       hasData: true,
       insights: finalInsights,
     })
