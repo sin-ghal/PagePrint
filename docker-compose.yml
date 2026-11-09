@@ -28,6 +28,12 @@ services:
       - server
     ports:
       - "3000:3000"
+    environment:
+      # Server-side (SSR) fetches run inside this container, where "localhost"
+      # means the container itself. Use the Docker service name so SSR can reach
+      # the backend over the bridge network. Browser fetches still use the
+      # host-exposed localhost:4000 via NEXT_PUBLIC_BACKEND_URL (build-time).
+      BACKEND_INTERNAL_URL: http://server:4000
     networks:
       - pageprint-net
 

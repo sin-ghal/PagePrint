@@ -29,8 +29,6 @@ const cleanupJobFiles = async (jobId: string): Promise<void> => {
   console.log(`Auto-deleted files for job ${jobId} (after ${AUTO_DELETE_MINUTES} min)`)
 }
 
-// Schedule a job's files to be auto-deleted after AUTO_DELETE_MINUTES.
-// In-memory timer, so a pending deletion is lost if the server restarts.
 const scheduleJobCleanup = (jobId: string): void => {
   const timer = setTimeout(() => {
     cleanupJobFiles(jobId).catch((err: any) =>
@@ -113,7 +111,7 @@ export const createJob = async (req: Request, res: Response): Promise<any> => {
       console.warn("Socket notification notice:", sockErr?.message || sockErr)
     }
 
-    // Auto-delete this job's files after AUTO_DELETE_MINUTES (in-memory timer).
+
     scheduleJobCleanup(job.jobId)
 
     return res.status(201).json({
@@ -169,7 +167,7 @@ export const getShopDetails = async (req: Request, res: Response): Promise<any> 
       shopSlug: { $regex: new RegExp(`^${cleanSlug}$`, "i") },
     })
       .select("shopName shopAddress phone name")
-      .lean()
+  
 
     if (!shop) {
       return res.status(404).json({

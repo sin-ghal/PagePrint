@@ -8,7 +8,12 @@ interface Shop {
 }
 
 async function getShop(shopSlug: string): Promise<Shop | null> {
-  const rawBase = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000"
+  // Server-side (SSR) fetch. Inside Docker, "localhost" resolves to the client
+  // container itself (where nothing listens on 4000), so prefer the Docker
+  // service hostname. BACKEND_INTERNAL_URL is server-only (not NEXT_PUBLIC_),
+  // so it never leaks into the browser bundle. The fallback keeps `npm run dev`
+  // working on the host, where localhost:4000 reaches the backend directly.
+  const rawBase = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000"
   const base = rawBase.trim().replace(/\/+$/, "")
   try {
     const res = await fetch(`${base}/api/v1/customer/shop/${encodeURIComponent(shopSlug.trim())}`, {
@@ -17,7 +22,8 @@ async function getShop(shopSlug: string): Promise<Shop | null> {
     if (!res.ok) return null
     const data = await res.json()
     return data.success ? data.shop : null
-  } catch {
+  } catch (err) {
+    console.error("getShop fetch failed:", err)
     return null
   }
 }
